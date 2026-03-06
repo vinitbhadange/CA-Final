@@ -1,0 +1,910 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CA Final — Sep 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<!-- Firebase SDK (compat — works in plain HTML, no bundler needed) -->
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+
+<style>
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+:root {
+  --bg:#F5F5F7; --surface:#FFFFFF; --surface2:#F5F5F7;
+  --border:#D2D2D7; --border-light:#E8E8ED;
+  --text:#1D1D1F; --text2:#6E6E73; --text3:#AEAEB2;
+  --accent:#0071E3; --accent-bg:#EBF4FF;
+  --green:#34C759; --green-bg:#E8F9ED;
+  --amber:#FF9F0A; --amber-bg:#FFF3E0;
+  --red:#FF3B30; --red-bg:#FFECEB;
+  --radius:14px; --radius-sm:8px;
+  --shadow:0 2px 12px rgba(0,0,0,.06),0 1px 3px rgba(0,0,0,.04);
+  --shadow-lg:0 8px 32px rgba(0,0,0,.10),0 2px 8px rgba(0,0,0,.06);
+  --font:'Plus Jakarta Sans',-apple-system,sans-serif;
+  --nav-h:52px;
+}
+html { font-size:15px; -webkit-font-smoothing:antialiased; }
+body { background:var(--bg); color:var(--text); font-family:var(--font); min-height:100vh; }
+button, input, textarea { font-family:var(--font); }
+
+/* ── HEADER ── */
+.header {
+  background:rgba(255,255,255,.88); backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--border-light);
+  padding:22px 40px 16px; position:sticky; top:0; z-index:200;
+}
+.header-inner { max-width:1100px; margin:0 auto; display:flex; align-items:flex-start; justify-content:space-between; gap:20px; flex-wrap:wrap; }
+.header-left h1 { font-size:21px; font-weight:700; letter-spacing:-.4px; margin-bottom:4px; }
+.air-badge { display:inline-flex; align-items:center; gap:5px; font-size:11px; font-weight:600; letter-spacing:.5px; color:var(--amber); background:var(--amber-bg); border-radius:20px; padding:3px 10px; }
+.header-right { display:flex; align-items:center; gap:12px; flex-shrink:0; }
+.countdown-num { font-size:26px; font-weight:700; letter-spacing:-1px; }
+.countdown-lbl { font-size:10px; color:var(--text3); text-transform:uppercase; letter-spacing:.8px; margin-top:-2px; text-align:right; }
+
+/* Sync status pill */
+.sync-pill {
+  display:flex; align-items:center; gap:6px;
+  font-size:12px; font-weight:500; padding:6px 12px;
+  border-radius:20px; border:1px solid var(--border);
+  background:var(--surface); cursor:pointer; transition:all .15s;
+  white-space:nowrap;
+}
+.sync-pill:hover { background:var(--surface2); }
+.sync-dot { width:7px; height:7px; border-radius:50%; flex-shrink:0; }
+.sync-dot.connected { background:var(--green); box-shadow:0 0 0 2px var(--green-bg); }
+.sync-dot.syncing { background:var(--amber); animation:pulse .8s infinite; }
+.sync-dot.offline { background:var(--text3); }
+.sync-dot.unconfigured { background:var(--red); }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+
+/* ── NAV ── */
+.nav { background:rgba(255,255,255,.88); backdrop-filter:blur(20px); border-bottom:1px solid var(--border-light); position:sticky; top:84px; z-index:100; }
+.nav-inner { max-width:1100px; margin:0 auto; display:flex; overflow-x:auto; scrollbar-width:none; }
+.nav-inner::-webkit-scrollbar { display:none; }
+.nav-btn { padding:0 20px; height:var(--nav-h); background:none; border:none; border-bottom:2px solid transparent; color:var(--text2); font-size:13px; font-weight:500; white-space:nowrap; cursor:pointer; transition:color .15s,border-color .15s; }
+.nav-btn:hover { color:var(--text); }
+.nav-btn.active { color:var(--accent); border-bottom-color:var(--accent); }
+
+/* ── PAGE ── */
+.page { max-width:1100px; margin:0 auto; padding:28px 40px 80px; }
+.section { display:none; }
+.section.active { display:block; }
+.sec-title { font-size:21px; font-weight:700; letter-spacing:-.4px; margin-bottom:4px; }
+.sec-sub { font-size:13px; color:var(--text2); margin-bottom:22px; }
+h3 { font-size:14px; font-weight:600; margin-bottom:12px; }
+
+/* ── CARDS / GRID ── */
+.card { background:var(--surface); border-radius:var(--radius); border:1px solid var(--border-light); box-shadow:var(--shadow); padding:20px; }
+.grid2 { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+.grid3 { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; }
+.divider { height:1px; background:var(--border-light); margin:22px 0; }
+.pbar-wrap { height:5px; background:var(--border-light); border-radius:3px; overflow:hidden; margin-top:6px; }
+.pbar { height:100%; border-radius:3px; transition:width .4s ease; }
+
+/* ── BUTTONS ── */
+.btn { display:inline-flex; align-items:center; gap:5px; font-size:12px; font-weight:600; padding:7px 14px; border-radius:8px; border:none; cursor:pointer; transition:all .15s; }
+.btn-primary { background:var(--text); color:#fff; }
+.btn-primary:hover { background:#333; }
+.btn-secondary { background:var(--surface); color:var(--text); border:1px solid var(--border); }
+.btn-secondary:hover { background:var(--surface2); }
+.btn-danger { background:var(--red-bg); color:var(--red); border:1px solid #FFB3B0; }
+.btn-danger:hover { background:var(--red); color:#fff; }
+.btn-sm { padding:5px 10px; font-size:11px; border-radius:6px; }
+.icon-btn { width:28px; height:28px; border-radius:6px; border:1px solid var(--border); background:var(--surface); color:var(--text2); font-size:13px; display:flex; align-items:center; justify-content:center; cursor:pointer; transition:all .15s; }
+.icon-btn:hover { background:var(--surface2); color:var(--text); }
+.icon-btn.del:hover { background:var(--red-bg); color:var(--red); border-color:#FFB3B0; }
+.form-input { padding:7px 10px; border:1px solid var(--border); border-radius:6px; font-size:12px; background:var(--surface); color:var(--text); outline:none; width:100%; }
+.form-input:focus { border-color:var(--accent); box-shadow:0 0 0 2px rgba(0,113,227,.1); }
+
+/* ── DASHBOARD ── */
+.dash-stats { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:20px; }
+.stat-card { background:var(--surface); border:1px solid var(--border-light); border-radius:var(--radius); padding:16px 18px; }
+.stat-val { font-size:26px; font-weight:700; letter-spacing:-1px; }
+.stat-lbl { font-size:11px; color:var(--text2); text-transform:uppercase; letter-spacing:.6px; margin-top:2px; }
+.subj-row { display:flex; align-items:center; gap:10px; padding:11px 0; border-bottom:1px solid var(--border-light); }
+.subj-row:last-child { border-bottom:none; }
+.subj-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+.subj-name { font-size:13px; font-weight:500; flex:1; }
+.subj-cols { display:flex; gap:4px; }
+.col-chip { width:28px; height:20px; border-radius:4px; font-size:9px; font-weight:700; display:flex; align-items:center; justify-content:center; border:1px solid var(--border); background:var(--surface2); color:var(--text3); letter-spacing:.3px; }
+.col-chip.done { background:var(--green-bg); border-color:var(--green); color:#1a7a35; }
+.col-chip.ip { background:var(--amber-bg); border-color:var(--amber); color:#b36600; }
+.ip-item { display:flex; align-items:flex-start; gap:10px; padding:9px 12px; border-radius:var(--radius-sm); background:var(--amber-bg); border:1px solid #FFDEA8; margin-bottom:6px; }
+.ip-dot { width:6px; height:6px; border-radius:50%; background:var(--amber); flex-shrink:0; margin-top:5px; }
+.ip-text { font-size:12px; font-weight:500; line-height:1.4; }
+.ip-sub { font-size:11px; color:var(--text2); margin-top:1px; }
+
+/* ── TIMELINE ── */
+.tl { display:flex; flex-direction:column; }
+.tl-item { display:grid; grid-template-columns:130px 1px 1fr; gap:0 20px; align-items:start; }
+.tl-date { font-size:11px; color:var(--text2); text-align:right; padding-top:18px; line-height:1.4; }
+.tl-spine { display:flex; flex-direction:column; align-items:center; }
+.tl-dot { width:10px; height:10px; border-radius:50%; flex-shrink:0; margin-top:21px; border:2px solid var(--bg); }
+.tl-line { width:1px; background:var(--border); flex:1; min-height:16px; }
+.tl-body { padding:14px 0 28px; }
+.tl-phase-label { font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:1.2px; margin-bottom:3px; }
+.tl-title { font-size:15px; font-weight:600; margin-bottom:5px; }
+.tl-desc { font-size:13px; color:var(--text2); line-height:1.6; }
+.tl-pills { display:flex; flex-wrap:wrap; gap:5px; margin-top:8px; }
+.pill { display:inline-block; font-size:11px; font-weight:600; padding:2px 8px; border-radius:6px; }
+
+/* ── SCHEDULE (break-based) ── */
+.anchor-row { display:flex; align-items:center; justify-content:space-between; gap:12px; }
+.anchor-lbl { font-size:13px; font-weight:500; white-space:nowrap; }
+.anchor-input { max-width:130px; }
+.study-total-label { font-size:11px; color:var(--text2); text-transform:uppercase; letter-spacing:.6px; }
+.study-total-val { font-size:28px; font-weight:700; letter-spacing:-1px; color:var(--green); margin-top:2px; }
+
+.day-block { display:flex; align-items:stretch; gap:10px; margin-bottom:4px; }
+.day-block-time { font-size:11px; font-weight:600; color:var(--text2); width:80px; text-align:right; padding-top:9px; flex-shrink:0; }
+.day-block-bar { width:4px; border-radius:2px; flex-shrink:0; min-height:36px; }
+.day-block-content { flex:1; padding:8px 12px; border-radius:var(--radius-sm); min-height:36px; display:flex; align-items:center; justify-content:space-between; }
+.day-block-name { font-size:13px; font-weight:500; }
+.day-block-dur { font-size:11px; color:var(--text2); flex-shrink:0; margin-left:8px; }
+.study-block .day-block-content { background:var(--green-bg); border:1px solid #A8EBBF; }
+.study-block .day-block-bar { background:var(--green); }
+.study-block .day-block-name { color:#1a7a35; font-weight:600; }
+.break-block .day-block-content { background:var(--surface2); border:1px solid var(--border-light); }
+.break-block .day-block-bar { background:var(--border); }
+.anchor-block .day-block-content { background:var(--accent-bg); border:1px solid #A8D0FF; }
+.anchor-block .day-block-bar { background:var(--accent); }
+.anchor-block .day-block-name { color:var(--accent); font-weight:600; }
+.del-brk { width:22px; height:22px; border-radius:5px; border:none; background:none; color:var(--text3); font-size:14px; cursor:pointer; flex-shrink:0; display:flex; align-items:center; justify-content:center; }
+.del-brk:hover { background:var(--red-bg); color:var(--red); }
+
+
+/* ── CHAPTERS ── */
+.ch-paper-block { margin-bottom:10px; border:1px solid var(--border-light); border-radius:var(--radius); overflow:hidden; background:var(--surface); box-shadow:var(--shadow); }
+.ch-paper-hdr { display:flex; align-items:center; justify-content:space-between; padding:14px 18px; cursor:pointer; user-select:none; }
+.ch-paper-hdr:hover { background:var(--surface2); }
+.ch-paper-left { display:flex; align-items:center; gap:10px; }
+.ch-paper-dot { width:10px; height:10px; border-radius:50%; flex-shrink:0; }
+.ch-paper-name { font-size:14px; font-weight:600; }
+.ch-paper-info { font-size:12px; color:var(--text2); }
+.ch-paper-right { display:flex; align-items:center; gap:10px; }
+.ch-pct { font-size:13px; font-weight:600; }
+.chevron { font-size:11px; color:var(--text3); transition:transform .2s; }
+.ch-paper-block.open .chevron { transform:rotate(180deg); }
+.ch-table { display:none; border-top:1px solid var(--border-light); }
+.ch-paper-block.open .ch-table { display:block; }
+.ch-hdr-row { display:grid; grid-template-columns:28px 1fr 160px repeat(6,36px); gap:6px; padding:8px 18px; background:var(--surface2); font-size:10px; font-weight:700; color:var(--text3); text-transform:uppercase; letter-spacing:.8px; }
+.ch-data-row { display:grid; grid-template-columns:28px 1fr 160px repeat(6,36px); gap:6px; padding:9px 18px; font-size:12px; border-top:1px solid var(--border-light); align-items:center; }
+.ch-data-row:hover { background:var(--surface2); }
+.ch-num { color:var(--text3); font-weight:600; font-size:11px; }
+.ch-name-cell { font-weight:500; }
+.ch-topic { color:var(--text2); font-size:11px; }
+.status-btn { width:32px; height:24px; border-radius:5px; border:1px solid var(--border); background:var(--surface2); cursor:pointer; font-size:10px; font-weight:700; color:var(--text3); display:flex; align-items:center; justify-content:center; transition:all .15s; user-select:none; }
+.status-btn:hover { border-color:var(--accent); color:var(--accent); }
+.status-btn.done { background:var(--green-bg); border-color:var(--green); color:#1a7a35; }
+.status-btn.ip { background:var(--amber-bg); border-color:var(--amber); color:#b36600; }
+
+/* ── MOCKS ── */
+.mock-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; }
+.mock-card { background:var(--surface); border:1px solid var(--border-light); border-radius:var(--radius); padding:18px; box-shadow:var(--shadow); }
+.mock-title { font-size:14px; font-weight:700; margin-bottom:2px; }
+.mock-date { font-size:11px; color:var(--text2); margin-bottom:12px; }
+.mock-paper-row { display:flex; align-items:center; gap:8px; padding:7px 0; border-bottom:1px solid var(--border-light); }
+.mock-paper-row:last-child { border-bottom:none; }
+.mock-paper-name { flex:1; font-size:12px; }
+.check-box { width:20px; height:20px; border-radius:5px; border:1.5px solid var(--border); cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all .15s; font-size:11px; flex-shrink:0; }
+.check-box.done { background:var(--green); border-color:var(--green); color:#fff; }
+.mock-prog-label { display:flex; justify-content:space-between; font-size:11px; color:var(--text2); margin-bottom:4px; margin-top:10px; }
+
+/* ── NOTES ── */
+.notes-layout { display:grid; grid-template-columns:220px 1fr; gap:16px; min-height:500px; }
+.notes-sidebar { background:var(--surface); border:1px solid var(--border-light); border-radius:var(--radius); box-shadow:var(--shadow); overflow:hidden; }
+.notes-sb-header { padding:14px 16px; border-bottom:1px solid var(--border-light); display:flex; align-items:center; justify-content:space-between; }
+.notes-sb-title { font-size:13px; font-weight:600; }
+.notes-list { overflow-y:auto; max-height:calc(100vh - 260px); }
+.note-item { padding:11px 16px; border-bottom:1px solid var(--border-light); cursor:pointer; transition:background .1s; }
+.note-item:hover { background:var(--surface2); }
+.note-item.active { background:var(--accent-bg); }
+.note-item-title { font-size:13px; font-weight:500; margin-bottom:2px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.note-item-date { font-size:10px; color:var(--text3); }
+.notes-main { background:var(--surface); border:1px solid var(--border-light); border-radius:var(--radius); box-shadow:var(--shadow); display:flex; flex-direction:column; }
+.notes-toolbar { padding:12px 18px; border-bottom:1px solid var(--border-light); display:flex; align-items:center; gap:8px; }
+.notes-title-input { flex:1; font-size:15px; font-weight:600; border:none; background:transparent; color:var(--text); outline:none; }
+.notes-title-input::placeholder { color:var(--text3); }
+.notes-body-wrap { flex:1; padding:18px; }
+.notes-textarea { width:100%; min-height:400px; border:none; background:transparent; color:var(--text); font-size:14px; line-height:1.7; resize:none; outline:none; font-family:var(--font); }
+.notes-textarea::placeholder { color:var(--text3); }
+.notes-empty { display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:300px; color:var(--text3); text-align:center; }
+.notes-empty-icon { font-size:36px; margin-bottom:10px; opacity:.4; }
+
+/* ── MODALS ── */
+.modal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,.25); z-index:1000; align-items:center; justify-content:center; backdrop-filter:blur(4px); }
+.modal-overlay.show { display:flex; }
+.modal { background:var(--surface); border-radius:18px; box-shadow:var(--shadow-lg); padding:28px; width:460px; max-width:92vw; max-height:90vh; overflow-y:auto; }
+.modal-title { font-size:17px; font-weight:700; margin-bottom:6px; }
+.modal-sub { font-size:13px; color:var(--text2); margin-bottom:20px; line-height:1.6; }
+.step { display:flex; gap:12px; margin-bottom:14px; align-items:flex-start; }
+.step-num { width:22px; height:22px; border-radius:50%; background:var(--text); color:#fff; font-size:11px; font-weight:700; display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:1px; }
+.step-text { font-size:13px; color:var(--text2); line-height:1.5; }
+.step-text b { color:var(--text); font-weight:600; }
+.step-text code { background:var(--surface2); border:1px solid var(--border); padding:1px 5px; border-radius:4px; font-size:12px; color:var(--accent); font-family:monospace; }
+.config-textarea { width:100%; height:130px; padding:10px 12px; border:1px solid var(--border); border-radius:8px; font-family:monospace; font-size:11px; color:var(--text); background:var(--surface2); outline:none; resize:none; margin-top:12px; }
+.config-textarea:focus { border-color:var(--accent); box-shadow:0 0 0 2px rgba(0,113,227,.1); }
+.modal-actions { display:flex; flex-direction:column; gap:8px; margin-top:16px; }
+.modal-btn { width:100%; padding:11px; border-radius:10px; font-size:13px; font-weight:600; border:none; cursor:pointer; transition:all .15s; }
+.modal-btn-primary { background:var(--text); color:#fff; }
+.modal-btn-primary:hover { background:#333; }
+.modal-btn-secondary { background:var(--surface2); color:var(--text); border:1px solid var(--border); }
+.modal-btn-secondary:hover { background:var(--border-light); }
+.modal-close { width:100%; padding:9px; background:none; border:none; color:var(--text2); font-size:13px; cursor:pointer; margin-top:4px; }
+.modal-close:hover { color:var(--text); }
+.alert { padding:10px 14px; border-radius:8px; font-size:12px; margin-bottom:12px; }
+.alert-error { background:var(--red-bg); color:var(--red); border:1px solid #FFB3B0; }
+.alert-success { background:var(--green-bg); color:#1a7a35; border:1px solid #A8EBBF; }
+
+/* ── LOADING SCREEN ── */
+#loading-screen { position:fixed; inset:0; background:var(--bg); z-index:9999; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:14px; transition:opacity .3s; }
+#loading-screen.hidden { opacity:0; pointer-events:none; }
+.loading-spinner { width:28px; height:28px; border:2.5px solid var(--border); border-top-color:var(--accent); border-radius:50%; animation:spin .7s linear infinite; }
+@keyframes spin { to{transform:rotate(360deg)} }
+.loading-text { font-size:13px; color:var(--text2); }
+
+@media(max-width:768px){
+  .header{padding:16px 20px;}
+  .page{padding:20px 16px 60px;}
+  .dash-stats{grid-template-columns:repeat(2,1fr);}
+  .grid2,.grid3,.mock-grid{grid-template-columns:1fr;}
+  .notes-layout{grid-template-columns:1fr;}
+  .nav-btn{padding:0 14px;font-size:12px;}
+  .ch-hdr-row,.ch-data-row{grid-template-columns:24px 1fr repeat(6,30px);}
+  .ch-topic{display:none;}
+  .add-block-form{grid-template-columns:70px 1fr;gap:6px;}
+  .add-block-form input:nth-child(3){grid-column:1/-1;}
+  .add-block-form button{grid-column:1/-1;}
+}
+</style>
+</head>
+<body>
+
+<!-- Loading screen -->
+<div id="loading-screen">
+  <div class="loading-spinner"></div>
+  <div class="loading-text" id="loading-text">Loading…</div>
+</div>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-inner">
+    <div class="header-left">
+      <h1>CA Final — Sep 2026</h1>
+    </div>
+    <div class="header-right">
+      <div>
+        <div class="countdown-num" id="cd-num">—</div>
+        <div class="countdown-lbl">Days to Exam</div>
+      </div>
+      <button class="sync-pill" onclick="openSyncModal()" id="sync-pill">
+        <div class="sync-dot unconfigured" id="sync-dot"></div>
+        <span id="sync-label">Set up sync</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- NAV -->
+<nav class="nav">
+  <div class="nav-inner">
+    <button class="nav-btn active" onclick="showTab('dashboard',this)">Dashboard</button>
+    <button class="nav-btn" onclick="showTab('timeline',this)">Timeline</button>
+    <button class="nav-btn" onclick="showTab('schedule',this)">Schedule</button>
+    <button class="nav-btn" onclick="showTab('chapters',this)">Chapters</button>
+    <button class="nav-btn" onclick="showTab('mocks',this)">Mocks & Revisions</button>
+    <button class="nav-btn" onclick="showTab('notes',this)">Notes</button>
+  </div>
+</nav>
+
+<div class="page">
+
+<!-- DASHBOARD -->
+<div class="section active" id="dashboard">
+  <div class="sec-title">Dashboard</div>
+  <div class="sec-sub">Your preparation at a glance</div>
+  <div class="dash-stats" id="dash-stats"></div>
+  <div class="grid2" style="align-items:start">
+    <div class="card"><h3>Subject Progress</h3><div id="subj-progress-list"></div></div>
+    <div class="card"><h3>Currently In Progress</h3><div id="ip-list"><div style="color:var(--text3);font-size:13px">No chapters marked In Progress yet.</div></div></div>
+  </div>
+</div>
+
+<!-- TIMELINE -->
+<div class="section" id="timeline">
+  <div class="sec-title">Study Timeline</div>
+  <div class="sec-sub">7 phases from today to September 1, 2026</div>
+  <div class="tl" id="tl-container"></div>
+</div>
+
+<!-- SCHEDULE -->
+<div class="section" id="schedule">
+  <div class="sec-title">Daily Schedule</div>
+  <div class="sec-sub">Enter your wake-up time, sleep time, and breaks. Study hours are calculated automatically.</div>
+
+  <div class="grid2" style="margin-bottom:20px;align-items:start">
+    <!-- Day anchors -->
+    <div class="card">
+      <h3>Day Anchors</h3>
+      <div class="anchor-row">
+        <span class="anchor-lbl">Wake up</span>
+        <input class="form-input anchor-input" id="anchor-wake" type="time" value="05:30">
+      </div>
+      <div class="anchor-row" style="margin-top:8px">
+        <span class="anchor-lbl">Sleep</span>
+        <input class="form-input anchor-input" id="anchor-sleep" type="time" value="23:00">
+      </div>
+      <div style="margin-top:14px;padding-top:14px;border-top:1px solid var(--border-light)">
+        <div class="study-total-label">Total study time today</div>
+        <div class="study-total-val" id="study-total">— hrs</div>
+      </div>
+    </div>
+
+    <!-- Add break -->
+    <div class="card">
+      <h3>Add a Break</h3>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <input class="form-input" id="brk-name" placeholder="Break name (e.g. Lunch, Evening walk…)">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+          <div>
+            <div style="font-size:11px;color:var(--text2);margin-bottom:3px">From</div>
+            <input class="form-input" id="brk-from" type="time">
+          </div>
+          <div>
+            <div style="font-size:11px;color:var(--text2);margin-bottom:3px">To</div>
+            <input class="form-input" id="brk-to" type="time">
+          </div>
+        </div>
+        <button class="btn btn-primary" style="width:100%;justify-content:center" onclick="addBreak()">+ Add Break</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Visual timeline -->
+  <div class="card" style="padding:18px 22px">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+      <h3 style="margin:0">Your Day</h3>
+      <button class="btn btn-secondary btn-sm" onclick="resetBreaks()">Reset</button>
+    </div>
+    <div id="sched-timeline"></div>
+  </div>
+</div>
+
+<!-- CHAPTERS -->
+<div class="section" id="chapters">
+  <div class="sec-title">Chapter Tracker</div>
+  <div class="sec-sub">Click each cell to cycle: — Not started → ↻ In Progress → ✓ Done &nbsp;·&nbsp; Columns: Lec · R1 · R2 · R3 · M1 · M2</div>
+  <div id="ch-container"></div>
+</div>
+
+<!-- MOCKS -->
+<div class="section" id="mocks">
+  <div class="sec-title">Mocks & Revisions</div>
+  <div class="sec-sub">3 revisions + 2 full mocks. Tick each paper as you complete it.</div>
+  <div class="mock-grid" id="mock-container"></div>
+</div>
+
+<!-- NOTES -->
+<div class="section" id="notes">
+  <div class="sec-title">Notes</div>
+  <div class="sec-sub">Subject notes, case laws, revision points — write anything.</div>
+  <div class="notes-layout">
+    <div class="notes-sidebar">
+      <div class="notes-sb-header">
+        <span class="notes-sb-title">All Notes</span>
+        <button class="btn btn-primary btn-sm" onclick="newNote()">+ New</button>
+      </div>
+      <div class="notes-list" id="notes-list"></div>
+    </div>
+    <div class="notes-main" id="notes-main">
+      <div class="notes-empty">
+        <div class="notes-empty-icon">📄</div>
+        <div style="font-size:13px">Select a note or create a new one</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div><!-- /page -->
+
+<!-- ═══ FIREBASE SETUP / SYNC MODAL ═══ -->
+<div class="modal-overlay" id="sync-modal">
+  <div class="modal">
+    <div id="sync-modal-body"></div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════
+//  STATIC DATA
+// ═══════════════════════════════════════════════════════
+const CHAPTERS=[{"num":1,"paper":"P1-FR","mod":"M1","ch":1,"name":"Conceptual Framework & Standards","topics":"IND AS Framework, IFRS"},{"num":2,"paper":"P1-FR","mod":"M1","ch":2,"name":"Ind AS 1: Presentation of FS","topics":"OCI, Comparative, Going Concern"},{"num":3,"paper":"P1-FR","mod":"M1","ch":3,"name":"Ind AS 7: Cash Flow Statements","topics":"Direct/Indirect, IAS 7"},{"num":4,"paper":"P1-FR","mod":"M1","ch":4,"name":"Ind AS 8: Accounting Policies","topics":"Changes, Errors, Estimates"},{"num":5,"paper":"P1-FR","mod":"M1","ch":5,"name":"Ind AS 10: Events after BS Date","topics":"Adjusting/Non-adjusting"},{"num":6,"paper":"P1-FR","mod":"M2","ch":6,"name":"Ind AS 16: PPE","topics":"Component, Revaluation"},{"num":7,"paper":"P1-FR","mod":"M2","ch":7,"name":"Ind AS 38: Intangible Assets","topics":"Recognition, Amortisation"},{"num":8,"paper":"P1-FR","mod":"M2","ch":8,"name":"Ind AS 40: Investment Property","topics":"Cost/Fair Value model"},{"num":9,"paper":"P1-FR","mod":"M2","ch":9,"name":"Ind AS 17/116: Leases","topics":"ROU Asset, Lease Liability"},{"num":10,"paper":"P1-FR","mod":"M2","ch":10,"name":"Ind AS 36: Impairment of Assets","topics":"CGU, VIU, FVLCD"},{"num":11,"paper":"P1-FR","mod":"M2","ch":11,"name":"Ind AS 23: Borrowing Costs","topics":"Qualifying Asset"},{"num":12,"paper":"P1-FR","mod":"M2","ch":12,"name":"Ind AS 20: Govt Grants","topics":"Asset/Income approach"},{"num":13,"paper":"P1-FR","mod":"M3","ch":13,"name":"Ind AS 2: Inventories","topics":"NRV, Cost formulas"},{"num":14,"paper":"P1-FR","mod":"M3","ch":14,"name":"Ind AS 11/115: Revenue","topics":"POB, 5-step model"},{"num":15,"paper":"P1-FR","mod":"M3","ch":15,"name":"Ind AS 37: Provisions & Contingencies","topics":"Present obligation, Probable"},{"num":16,"paper":"P1-FR","mod":"M4","ch":16,"name":"Ind AS 32/109/107: Financial Instruments","topics":"FVTPL, FVTOCI, Amortised Cost"},{"num":17,"paper":"P1-FR","mod":"M4","ch":17,"name":"Ind AS 103: Business Combinations","topics":"Acquisition method, Goodwill"},{"num":18,"paper":"P1-FR","mod":"M4","ch":18,"name":"Ind AS 110/111/112/28: Consolidation","topics":"CFS, NCI, Equity method"},{"num":19,"paper":"P1-FR","mod":"M5","ch":19,"name":"Ind AS 12: Income Taxes (DTA/DTL)","topics":"Temp diff, Deferred Tax"},{"num":20,"paper":"P1-FR","mod":"M5","ch":20,"name":"Ind AS 19: Employee Benefits","topics":"Defined benefit, Actuarial"},{"num":21,"paper":"P1-FR","mod":"M5","ch":21,"name":"Ind AS 102: Share-based Payment","topics":"ESOP, Fair value"},{"num":22,"paper":"P1-FR","mod":"M5","ch":22,"name":"Ind AS 33: EPS","topics":"Basic, Diluted"},{"num":23,"paper":"P2-AFM","mod":"M1","ch":1,"name":"Financial Policy & Corporate Strategy","topics":"EVA, Shareholder value"},{"num":24,"paper":"P2-AFM","mod":"M1","ch":2,"name":"Risk Management","topics":"Types, ERM framework"},{"num":25,"paper":"P2-AFM","mod":"M1","ch":3,"name":"Security Analysis","topics":"Technical & Fundamental"},{"num":26,"paper":"P2-AFM","mod":"M1","ch":4,"name":"Portfolio Management","topics":"Markowitz, CAPM, Sharpe"},{"num":27,"paper":"P2-AFM","mod":"M2","ch":5,"name":"Derivatives – Futures & Forwards","topics":"Hedging, Pricing"},{"num":28,"paper":"P2-AFM","mod":"M2","ch":6,"name":"Derivatives – Options","topics":"Black-Scholes, Greeks"},{"num":29,"paper":"P2-AFM","mod":"M2","ch":7,"name":"Derivatives – Swaps","topics":"Interest rate, Currency"},{"num":30,"paper":"P2-AFM","mod":"M2","ch":8,"name":"Interest Rate Risk Management","topics":"Duration, Convexity"},{"num":31,"paper":"P2-AFM","mod":"M3","ch":9,"name":"Foreign Exchange Exposure","topics":"Hedging, PPP, IRP"},{"num":32,"paper":"P2-AFM","mod":"M3","ch":10,"name":"International Financial Management","topics":"ADR/GDR, ECB, FCCB"},{"num":33,"paper":"P2-AFM","mod":"M4","ch":11,"name":"Corporate Valuation","topics":"DCF, Relative, EVA"},{"num":34,"paper":"P2-AFM","mod":"M4","ch":12,"name":"Mergers, Acquisitions & Restructuring","topics":"Synergy, Post-merger EPS"},{"num":35,"paper":"P2-AFM","mod":"M4","ch":13,"name":"Startup Finance & Venture Capital","topics":"Term sheet, Valuation"},{"num":36,"paper":"P2-AFM","mod":"M4","ch":14,"name":"Project Finance & Infrastructure","topics":"SPV, Concession"},{"num":37,"paper":"P2-AFM","mod":"M4","ch":15,"name":"Leasing","topics":"Finance vs Operating"},{"num":38,"paper":"P3-Audit","mod":"M1","ch":1,"name":"Quality Control (SQC 1, SA 220)","topics":"EQCR, Engagement partner"},{"num":39,"paper":"P3-Audit","mod":"M1","ch":2,"name":"General Auditing Principles","topics":"SA 240/250/260/299/402"},{"num":40,"paper":"P3-Audit","mod":"M1","ch":3,"name":"Audit Planning & Procedures","topics":"SA 300/450/520/540/610/620"},{"num":41,"paper":"P3-Audit","mod":"M1","ch":4,"name":"Risk Assessment & Internal Control","topics":"SA 265/330"},{"num":42,"paper":"P3-Audit","mod":"M1","ch":5,"name":"Audit Evidence","topics":"SA 500/501/505/510/530/550"},{"num":43,"paper":"P3-Audit","mod":"M1","ch":6,"name":"Completion & Review","topics":"SA 560/570/580"},{"num":44,"paper":"P3-Audit","mod":"M1","ch":7,"name":"Reporting","topics":"SA 700/701/705/706/710/720"},{"num":45,"paper":"P3-Audit","mod":"M2","ch":8,"name":"Specialised Areas","topics":"SA 800/805/810"},{"num":46,"paper":"P3-Audit","mod":"M2","ch":9,"name":"Related Services","topics":"SRS 4400/4410"},{"num":47,"paper":"P3-Audit","mod":"M2","ch":10,"name":"Review Engagements","topics":"SRE 2400/2410"},{"num":48,"paper":"P3-Audit","mod":"M2","ch":11,"name":"Assurance Engagements","topics":"SAE 3400/3402/3420"},{"num":49,"paper":"P3-Audit","mod":"M2","ch":12,"name":"Digital Auditing","topics":"CAAT, Data Analytics, AI"},{"num":50,"paper":"P3-Audit","mod":"M2","ch":13,"name":"Group Audits","topics":"SA 600"},{"num":51,"paper":"P3-Audit","mod":"M2","ch":14,"name":"Banks & NBFCs","topics":"RBI, Concurrent Audit"},{"num":52,"paper":"P3-Audit","mod":"M3","ch":15,"name":"PSU Audits","topics":"CAG, C&AG"},{"num":53,"paper":"P3-Audit","mod":"M3","ch":16,"name":"Internal Audit","topics":"ICAI Standards on IA"},{"num":54,"paper":"P3-Audit","mod":"M3","ch":17,"name":"Due Diligence & Forensic","topics":"Investigation, FAIS"},{"num":55,"paper":"P3-Audit","mod":"M3","ch":18,"name":"ESG & Sustainability Assurance","topics":"SDG, Non-financial"},{"num":56,"paper":"P3-Audit","mod":"M3","ch":19,"name":"Professional Ethics","topics":"CA Act 1949, Regulations"},{"num":57,"paper":"P4-DT","mod":"M1","ch":1,"name":"Basic Concepts","topics":"AY, PY, Rates, Surcharge"},{"num":58,"paper":"P4-DT","mod":"M1","ch":2,"name":"Incomes not forming part of Total Income","topics":"Sec 10, 14A"},{"num":59,"paper":"P4-DT","mod":"M1","ch":3,"name":"PGBP","topics":"Sec 28–44"},{"num":60,"paper":"P4-DT","mod":"M1","ch":4,"name":"Capital Gains","topics":"Sec 45–55A, 111A, 112A"},{"num":61,"paper":"P4-DT","mod":"M1","ch":5,"name":"Income from Other Sources","topics":"Sec 56–59"},{"num":62,"paper":"P4-DT","mod":"M1","ch":6,"name":"Clubbing of Income","topics":"Sec 60–65"},{"num":63,"paper":"P4-DT","mod":"M1","ch":7,"name":"Set-off & Carry Forward of Losses","topics":"Sec 70–80"},{"num":64,"paper":"P4-DT","mod":"M1","ch":8,"name":"Deductions from GTI","topics":"Sec 80C–80U"},{"num":65,"paper":"P4-DT","mod":"M2","ch":9,"name":"Assessment of Various Entities","topics":"115BAA/BAB/BAC, Firms"},{"num":66,"paper":"P4-DT","mod":"M2","ch":10,"name":"Trusts, Institutions & Special Entities","topics":"Sec 11–13, Political parties"},{"num":67,"paper":"P4-DT","mod":"M2","ch":11,"name":"Tax Planning, Avoidance & Evasion","topics":"GAAR, Chapter X-A"},{"num":68,"paper":"P4-DT","mod":"M2","ch":12,"name":"Taxation of Digital Transactions","topics":"VDA, Sec 115BBH"},{"num":69,"paper":"P4-DT","mod":"M3","ch":13,"name":"Deduction, Collection & Recovery","topics":"TDS Sec 192–196D, TCS"},{"num":70,"paper":"P4-DT","mod":"M3","ch":14,"name":"Income-tax Authorities","topics":"CBDT, AO, CIT"},{"num":71,"paper":"P4-DT","mod":"M3","ch":15,"name":"Assessment Procedure","topics":"Sec 139, 143, 147, 153A"},{"num":72,"paper":"P4-DT","mod":"M3","ch":16,"name":"Appeals and Revision","topics":"CIT(A), ITAT, HC, SC"},{"num":73,"paper":"P4-DT","mod":"M3","ch":17,"name":"Dispute Resolution","topics":"DRP, APA, Faceless"},{"num":74,"paper":"P4-DT","mod":"M3","ch":18,"name":"Miscellaneous Provisions","topics":"Survey, Search, Interest"},{"num":75,"paper":"P4-DT","mod":"M3","ch":19,"name":"Counteracting Unethical Tax Practices","topics":"Black Money, Penalties"},{"num":76,"paper":"P4-DT","mod":"M3","ch":20,"name":"Tax Audit & Ethics","topics":"Sec 44AB, 3CA/3CB/3CD"},{"num":77,"paper":"P4-DT","mod":"M4","ch":21,"name":"Non-resident Taxation","topics":"Sec 5, 9, 115E/AD"},{"num":78,"paper":"P4-DT","mod":"M4","ch":22,"name":"Double Taxation Relief","topics":"Sec 90/91, DTAA"},{"num":79,"paper":"P4-DT","mod":"M4","ch":23,"name":"Advance Rulings","topics":"AAR/BAR"},{"num":80,"paper":"P4-DT","mod":"M4","ch":24,"name":"Transfer Pricing","topics":"ALP, APAs, CbCR"},{"num":81,"paper":"P4-DT","mod":"M4","ch":25,"name":"Fundamentals of BEPS","topics":"OECD Action Plans 1-15"},{"num":82,"paper":"P4-DT","mod":"M4","ch":26,"name":"Application of Tax Treaties","topics":"PE, LOB, Beneficial owner"},{"num":83,"paper":"P4-DT","mod":"M4","ch":27,"name":"Overview of Model Tax Conventions","topics":"OECD/UN Model"},{"num":84,"paper":"P4-DT","mod":"M4","ch":28,"name":"Latest Developments in Intl Tax","topics":"Digital economy, MLI"},{"num":85,"paper":"P5-IDT","mod":"M1","ch":1,"name":"Supply under GST","topics":"Sec 7/8; Sch I-III"},{"num":86,"paper":"P5-IDT","mod":"M1","ch":2,"name":"Charge of GST","topics":"Sec 9 CGST, RCM"},{"num":87,"paper":"P5-IDT","mod":"M1","ch":3,"name":"Place of Supply","topics":"Sec 10-13 IGST"},{"num":88,"paper":"P5-IDT","mod":"M1","ch":4,"name":"Exemptions from GST","topics":"Sec 11; Notfns 12/13"},{"num":89,"paper":"P5-IDT","mod":"M1","ch":5,"name":"Time of Supply","topics":"Sec 12/13/14 CGST"},{"num":90,"paper":"P5-IDT","mod":"M1","ch":6,"name":"Value of Supply","topics":"Sec 15; Valuation Rules"},{"num":91,"paper":"P5-IDT","mod":"M2","ch":7,"name":"Input Tax Credit","topics":"Sec 16/17/18; Blocked"},{"num":92,"paper":"P5-IDT","mod":"M2","ch":8,"name":"Registration","topics":"Sec 22–30"},{"num":93,"paper":"P5-IDT","mod":"M2","ch":9,"name":"Tax Invoice, Credit & Debit Notes","topics":"Sec 31/34; E-Invoice"},{"num":94,"paper":"P5-IDT","mod":"M2","ch":10,"name":"Accounts, Records & E-way Bill","topics":"Sec 35/36; E-way Rules"},{"num":95,"paper":"P5-IDT","mod":"M2","ch":11,"name":"Payment of Tax","topics":"Sec 49/51/52"},{"num":96,"paper":"P5-IDT","mod":"M2","ch":12,"name":"Electronic Commerce Transactions","topics":"Sec 9(5), 52"},{"num":97,"paper":"P5-IDT","mod":"M2","ch":13,"name":"Returns","topics":"GSTR-1/3B/9/9C"},{"num":98,"paper":"P5-IDT","mod":"M3","ch":14,"name":"Import & Export under GST","topics":"Sec 16 IGST; Zero-rated"},{"num":99,"paper":"P5-IDT","mod":"M3","ch":15,"name":"Refunds","topics":"Sec 54/55"},{"num":100,"paper":"P5-IDT","mod":"M3","ch":16,"name":"Job Work","topics":"Sec 143, 2(68)"},{"num":101,"paper":"P5-IDT","mod":"M3","ch":17,"name":"Assessment & Audit","topics":"Sec 59–66"},{"num":102,"paper":"P5-IDT","mod":"M3","ch":18,"name":"Inspection, Search & Arrest","topics":"Sec 67–71"},{"num":103,"paper":"P5-IDT","mod":"M3","ch":19,"name":"Demands & Recovery","topics":"Sec 73/74/75/79"},{"num":104,"paper":"P5-IDT","mod":"M3","ch":20,"name":"Liability to Pay in Certain Cases","topics":"Sec 85–90"},{"num":105,"paper":"P5-IDT","mod":"M3","ch":21,"name":"Offences, Penalties & Ethics","topics":"Sec 122–130"},{"num":106,"paper":"P5-IDT","mod":"M3","ch":22,"name":"Appeals & Revision","topics":"Sec 107/108/112"},{"num":107,"paper":"P5-IDT","mod":"M3","ch":23,"name":"Advance Ruling","topics":"Sec 95–106"},{"num":108,"paper":"P5-IDT","mod":"M3","ch":24,"name":"Miscellaneous Provisions","topics":"Sec 171 Anti-profiteering"},{"num":109,"paper":"P5-IDT","mod":"M4","ch":1,"name":"Levy & Exemptions – Customs","topics":"Sec 12/14 Customs Act"},{"num":110,"paper":"P5-IDT","mod":"M4","ch":2,"name":"Types of Duty","topics":"BCD, CVD, Anti-dumping"},{"num":111,"paper":"P5-IDT","mod":"M4","ch":3,"name":"Classification – Customs","topics":"CTA 1975; HSN"},{"num":112,"paper":"P5-IDT","mod":"M4","ch":4,"name":"Valuation under Customs","topics":"Sec 14; Valuation Rules"},{"num":113,"paper":"P5-IDT","mod":"M4","ch":5,"name":"Importation & Exportation of Goods","topics":"Bill of Entry; Shipping Bill"},{"num":114,"paper":"P5-IDT","mod":"M4","ch":6,"name":"Warehousing","topics":"Sec 57–73"},{"num":115,"paper":"P5-IDT","mod":"M4","ch":7,"name":"Refund – Customs","topics":"Sec 27; Unjust enrichment"},{"num":116,"paper":"P5-IDT","mod":"M4","ch":8,"name":"Foreign Trade Policy","topics":"EPCG, Adv Auth, RoDTEP"}];
+const PAPERS=[{id:'P1-FR',name:'Financial Reporting',short:'FR',color:'#0071E3',total:22},{id:'P2-AFM',name:'Adv. Financial Mgmt',short:'AFM',color:'#5856D6',total:15},{id:'P3-Audit',name:'Advanced Auditing',short:'Audit',color:'#FF9F0A',total:19},{id:'P4-DT',name:'Direct Tax Laws',short:'DT',color:'#34C759',total:28},{id:'P5-IDT',name:'Indirect Tax Laws',short:'IDT',color:'#FF6B35',total:32},{id:'P6-IBS',name:'Integrated Business Solutions',short:'IBS',color:'#AF52DE',total:0}];
+const COLS=['Lec','R1','R2','R3','M1','M2'];
+const CKEYS=['lec','r1','r2','r3','m1','m2'];
+const TIMELINE=[{phase:'Phase 1',title:'Lectures & First Read',dates:'Mar 4 – Apr 30, 2026',color:'#0071E3',desc:'Complete all subject lectures. FR+AFM parallel → DT+Audit parallel → IDT → IBS overview.',pills:['Syllabus by Apr 30','FR·AFM·Audit·DT·IDT·IBS','Short notes per chapter']},{phase:'Phase 2',title:'Revision 1 — Thorough',dates:'May 1 – May 31, 2026',color:'#5856D6',desc:'First complete revision. 5 days per paper. Solve ICAI PM chapter by chapter.',pills:['5 days × 6 papers','ICAI PM per chapter','Build short notes']},{phase:'Phase 3',title:'Revision 2 — Speed',dates:'Jun 1 – Jun 25, 2026',color:'#FF9F0A',desc:'Faster revision using short notes. 4 days per paper. Full answer writing practice.',pills:['4 days × 6 papers','Answer writing','Identify weak spots']},{phase:'Phase 4',title:'Mock Exam 1',dates:'Jun 26 – Jul 10, 2026',color:'#FF3B30',desc:'Full 6-paper mock under 3-hour conditions. Self-evaluate per ICAI marking scheme. Target: 65%+.',pills:['6 papers × 3 hrs','Strict self-evaluation','Target 65%+']},{phase:'Phase 5',title:'Revision 3 — Final',dates:'Jul 11 – Aug 10, 2026',color:'#34C759',desc:'Final revision. Cover Oct 2025 amendments. Solve ICAI RTPs. Case laws and key judgements.',pills:['Amendments coverage','ICAI RTP Sep 2026','Case laws']},{phase:'Phase 6',title:'Mock Exam 2',dates:'Aug 11 – Aug 20, 2026',color:'#FF6B35',desc:'Second full simulation. Real exam-day conditions. Target 70%+. No new material after this.',pills:['Full simulation','Target 70%+','Gap fix only']},{phase:'Phase 7',title:'Final Sprint',dates:'Aug 21 – Sep 1, 2026',color:'#AF52DE',desc:'Short notes only. 8–9 hrs/day. Sleep 7 hrs. Stay calm. You have done the work.',pills:['Short notes only','8 hrs/day','Sleep & rest']}];
+const MOCK_SECTIONS=[{id:'rev1',title:'Revision 1',dates:'May 1 – May 31',color:'#0071E3',items:['P1 – Financial Reporting','P2 – Adv Financial Mgmt','P3 – Advanced Auditing','P4 – Direct Tax','P5 – Indirect Tax Laws','P6 – IBS']},{id:'rev2',title:'Revision 2',dates:'Jun 1 – Jun 25',color:'#5856D6',items:['P1 – Financial Reporting','P2 – Adv Financial Mgmt','P3 – Advanced Auditing','P4 – Direct Tax','P5 – Indirect Tax Laws','P6 – IBS']},{id:'mock1',title:'Mock Exam 1',dates:'Jun 26 – Jul 10',color:'#FF3B30',items:['P1 – FR (3 hrs)','P2 – AFM (3 hrs)','P3 – Audit (3 hrs)','P4 – DT (3 hrs)','P5 – IDT (3 hrs)','P6 – IBS (3 hrs)']},{id:'rev3',title:'Revision 3',dates:'Jul 11 – Aug 10',color:'#34C759',items:['P1 – Financial Reporting','P2 – Adv Financial Mgmt','P3 – Advanced Auditing','P4 – Direct Tax','P5 – Indirect Tax Laws','P6 – IBS']},{id:'mock2',title:'Mock Exam 2',dates:'Aug 11 – Aug 20',color:'#FF6B35',items:['P1 – FR (3 hrs)','P2 – AFM (3 hrs)','P3 – Audit (3 hrs)','P4 – DT (3 hrs)','P5 – IDT (3 hrs)','P6 – IBS (3 hrs)']},{id:'sprint',title:'Final Sprint',dates:'Aug 21 – Sep 1',color:'#AF52DE',items:['Short notes – P1','Short notes – P2','Short notes – P3','Short notes – P4','Short notes – P5','Short notes – P6']}];
+
+// ═══════════════════════════════════════════════════════
+//  FIREBASE LAYER
+// ═══════════════════════════════════════════════════════
+let db = null;      // Firebase database reference
+let dbRef = null;   // Root ref: /caf_data
+let localCache = {}; // In-memory mirror for instant reads
+let syncDebounceTimer = null;
+let isFirebaseReady = false;
+
+// ── HARDCODED FIREBASE CONFIG ──
+const FIREBASE_CONFIG = {
+  apiKey: "AIzaSyAxj9jgh1zNgFP1Ble6jkGO-sEEeHwGIQY",
+  authDomain: "ca-final-acee0.firebaseapp.com",
+  databaseURL: "https://ca-final-acee0-default-rtdb.firebaseio.com",
+  projectId: "ca-final-acee0",
+  storageBucket: "ca-final-acee0.firebasestorage.app",
+  messagingSenderId: "239980240589",
+  appId: "1:239980240589:web:895e4b5107c9f2fa739384"
+};
+
+function initFirebase(config){
+  try {
+    // Clean up existing app if re-initialising
+    const existingApps = firebase.apps;
+    existingApps.forEach(app => app.delete());
+
+    firebase.initializeApp(config);
+    db = firebase.database();
+    dbRef = db.ref('caf_data');
+    isFirebaseReady = true;
+    setSyncStatus('syncing','Connecting…');
+
+    // Real-time listener — on any remote change, update local cache + re-render
+    dbRef.on('value', snap => {
+      const data = snap.val() || {};
+      localCache = data;
+      // Persist to localStorage as fast fallback
+      localStorage.setItem('caf_local_cache', JSON.stringify(localCache));
+      setSyncStatus('connected', 'Synced');
+      refreshAllUI();
+    }, err => {
+      setSyncStatus('offline', 'Offline');
+    });
+
+    return true;
+  } catch(e) {
+    setSyncStatus('unconfigured','Error');
+    return false;
+  }
+}
+
+// Push entire localCache to Firebase (debounced 800ms)
+function pushToFirebase(){
+  if(!isFirebaseReady || !dbRef) return;
+  clearTimeout(syncDebounceTimer);
+  setSyncStatus('syncing','Saving…');
+  syncDebounceTimer = setTimeout(()=>{
+    dbRef.set(localCache)
+      .then(()=> setSyncStatus('connected','Synced'))
+      .catch(()=> setSyncStatus('offline','Offline – changes saved locally'));
+  }, 800);
+}
+
+// Read from cache (instant, no async needed)
+function getState(){ return localCache; }
+
+function patchState(obj){
+  Object.assign(localCache, obj);
+  localStorage.setItem('caf_local_cache', JSON.stringify(localCache));
+  pushToFirebase();
+}
+
+function setSyncStatus(state, label){
+  const dot = document.getElementById('sync-dot');
+  const lbl = document.getElementById('sync-label');
+  if(!dot || !lbl) return;
+  dot.className = 'sync-dot ' + state;
+  lbl.textContent = label;
+}
+
+// ── Derived helpers ──
+function getSchedule(){ return localCache.schedule || JSON.parse(JSON.stringify(DEFAULT_SCHEDULE)); }
+function saveSchedule(sch){ patchState({schedule:sch}); }
+function getChStatus(num,col){ return (localCache['ch_'+num+'_'+col])||0; }
+function getNotes(){ return localCache.notes||[]; }
+function saveNotes(n){ patchState({notes:n}); }
+
+// ═══════════════════════════════════════════════════════
+//  SYNC MODAL (status only — config is hardcoded)
+// ═══════════════════════════════════════════════════════
+function openSyncModal(){
+  const body = document.getElementById('sync-modal-body');
+  const status = isFirebaseReady ? '● Connected & syncing to Firebase' : '○ Connecting…';
+  const statusClass = isFirebaseReady ? 'alert-success' : 'alert-error';
+  body.innerHTML = `
+    <div class="modal-title">Sync Status</div>
+    <div class="modal-sub">Your data syncs automatically to Firebase across all devices and browsers.</div>
+    <div class="alert ${statusClass}">${status}</div>
+    <div style="font-size:12px;color:var(--text2);margin-bottom:16px">Database: <code style="font-size:11px;background:var(--surface2);padding:2px 5px;border-radius:4px">ca-final-acee0-default-rtdb</code></div>
+    <button class="modal-close" onclick="closeSyncModal()">Close</button>`;
+  document.getElementById('sync-modal').classList.add('show');
+}
+function closeSyncModal(){ document.getElementById('sync-modal').classList.remove('show'); }
+
+// ═══════════════════════════════════════════════════════
+//  UI: COUNTDOWN
+// ═══════════════════════════════════════════════════════
+function countdown(){
+  document.getElementById('cd-num').textContent = Math.max(0,Math.ceil((new Date('2026-09-01')-new Date())/(864e5)));
+}
+
+// ═══════════════════════════════════════════════════════
+//  UI: TABS
+// ═══════════════════════════════════════════════════════
+function showTab(id,btn){
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  btn.classList.add('active');
+  if(id==='dashboard') updateDashboard();
+}
+
+// ═══════════════════════════════════════════════════════
+//  UI: DASHBOARD
+// ═══════════════════════════════════════════════════════
+function updateDashboard(){
+  const mocks = localCache.mocks||{};
+  const allDone = CHAPTERS.filter(c=>getChStatus(c.num,'lec')===2).length;
+  const allIP   = CHAPTERS.filter(c=>CKEYS.some(k=>getChStatus(c.num,k)===1)).length;
+  const mockDone= Object.values(mocks).filter(Boolean).length;
+  const totalMock= MOCK_SECTIONS.reduce((a,m)=>a+m.items.length,0);
+
+  document.getElementById('dash-stats').innerHTML=`
+    <div class="stat-card"><div class="stat-val">${Math.max(0,Math.ceil((new Date('2026-09-01')-new Date())/(864e5)))}</div><div class="stat-lbl">Days Remaining</div></div>
+    <div class="stat-card"><div class="stat-val" style="color:var(--green)">${allDone}<span style="font-size:16px;color:var(--text2)"> /116</span></div><div class="stat-lbl">Chapters Done (Lec)</div></div>
+    <div class="stat-card"><div class="stat-val" style="color:var(--amber)">${allIP}</div><div class="stat-lbl">In Progress</div></div>
+    <div class="stat-card"><div class="stat-val" style="color:var(--accent)">${mockDone}<span style="font-size:16px;color:var(--text2)"> /${totalMock}</span></div><div class="stat-lbl">Mocks & Rev Done</div></div>`;
+
+  const pl=document.getElementById('subj-progress-list');
+  pl.innerHTML='';
+  PAPERS.filter(p=>p.total>0).forEach(p=>{
+    const chs=CHAPTERS.filter(c=>c.paper===p.id);
+    const counts={};
+    CKEYS.forEach(k=>{ counts[k]={done:0,ip:0}; });
+    chs.forEach(c=>{ CKEYS.forEach(k=>{ const v=getChStatus(c.num,k); if(v===2)counts[k].done++; else if(v===1)counts[k].ip++; }); });
+    const lDone=counts['lec'].done;
+    const chips=CKEYS.map((k,i)=>{
+      const d=counts[k].done,ip=counts[k].ip;
+      const cls=d===chs.length?'done':ip>0?'ip':'';
+      const txt=d===chs.length?'✓':ip>0?ip+'↻':COLS[i];
+      return `<div class="col-chip ${cls}">${txt}</div>`;
+    }).join('');
+    pl.innerHTML+=`<div class="subj-row">
+      <div class="subj-dot" style="background:${p.color}"></div>
+      <div><div class="subj-name">${p.short}</div><div class="pbar-wrap" style="width:80px"><div class="pbar" style="background:${p.color};width:${Math.round(lDone/chs.length*100)}%"></div></div></div>
+      <div style="font-size:11px;color:var(--text2);min-width:50px">${lDone}/${chs.length} Lec</div>
+      <div class="subj-cols">${chips}</div>
+    </div>`;
+  });
+
+  const ipEl=document.getElementById('ip-list');
+  const ipItems=[];
+  PAPERS.filter(p=>p.total>0).forEach(p=>{
+    CHAPTERS.filter(c=>c.paper===p.id).forEach(c=>{
+      CKEYS.forEach((k,i)=>{ if(getChStatus(c.num,k)===1) ipItems.push({paper:p.short,color:p.color,chapter:c.name,col:COLS[i]}); });
+    });
+  });
+  ipEl.innerHTML=!ipItems.length
+    ? '<div style="color:var(--text3);font-size:13px">No chapters marked In Progress.</div>'
+    : ipItems.slice(0,12).map(it=>`<div class="ip-item"><div class="ip-dot" style="background:${it.color}"></div><div><div class="ip-text">${it.chapter}</div><div class="ip-sub">${it.paper} · ${it.col}</div></div></div>`).join('')
+      + (ipItems.length>12?`<div style="font-size:12px;color:var(--text2);padding:6px 0">+${ipItems.length-12} more…</div>`:'');
+}
+
+// ═══════════════════════════════════════════════════════
+//  UI: TIMELINE
+// ═══════════════════════════════════════════════════════
+function buildTimeline(){
+  const c=document.getElementById('tl-container');
+  TIMELINE.forEach((item,i)=>{
+    const pills=item.pills.map(p=>`<span class="pill" style="background:${item.color}15;color:${item.color};border:1px solid ${item.color}30">${p}</span>`).join('');
+    c.innerHTML+=`<div class="tl-item">
+      <div class="tl-date">${item.dates}</div>
+      <div class="tl-spine"><div class="tl-dot" style="background:${item.color}"></div>${i<TIMELINE.length-1?'<div class="tl-line"></div>':''}</div>
+      <div class="tl-body">
+        <div class="tl-phase-label" style="color:${item.color}">${item.phase}</div>
+        <div class="tl-title">${item.title}</div>
+        <div class="tl-desc">${item.desc}</div>
+        <div class="tl-pills">${pills}</div>
+      </div>
+    </div>`;
+  });
+}
+
+// ═══════════════════════════════════════════════════════
+//  UI: SCHEDULE (break-based)
+// ═══════════════════════════════════════════════════════
+function getSchedAnchors(){ return localCache.schedAnchors || {wake:'05:30', sleep:'23:00'}; }
+function getBreaks(){
+  return localCache.schedBreaks || [
+    {id:'b1',name:'Breakfast',    from:'09:00',to:'09:30'},
+    {id:'b2',name:'Lunch & rest', from:'13:00',to:'14:00'},
+    {id:'b3',name:'Evening break',from:'17:00',to:'17:30'},
+    {id:'b4',name:'Dinner',       from:'19:00',to:'19:45'},
+  ];
+}
+function toMins(t){ const [h,m]=t.split(':').map(Number); return h*60+m; }
+function fmtTime(mins){ const h=Math.floor(mins/60)%24,m=mins%60,ampm=h>=12?'PM':'AM',h12=h%12||12; return `${h12}:${String(m).padStart(2,'0')} ${ampm}`; }
+function fmtDur(mins){ if(mins<=0)return''; const h=Math.floor(mins/60),m=mins%60; return h>0?(m>0?`${h}h ${m}m`:`${h}h`):`${m}m`; }
+
+function buildScheduleUI(){
+  const anchors=getSchedAnchors(), breaks=getBreaks();
+  const wakeEl=document.getElementById('anchor-wake'), sleepEl=document.getElementById('anchor-sleep');
+  if(wakeEl){ wakeEl.value=anchors.wake; if(!wakeEl._bound){wakeEl.addEventListener('change',saveSchedData);wakeEl._bound=true;} }
+  if(sleepEl){ sleepEl.value=anchors.sleep; if(!sleepEl._bound){sleepEl.addEventListener('change',saveSchedData);sleepEl._bound=true;} }
+
+  const wakeM=toMins(anchors.wake), sleepM=toMins(anchors.sleep);
+  const sorted=[...breaks].sort((a,b)=>toMins(a.from)-toMins(b.from));
+  const segs=[]; let cur=wakeM;
+  segs.push({type:'anchor',name:'Wake up',from:wakeM,to:wakeM,dur:0});
+  sorted.forEach(b=>{
+    const bf=toMins(b.from),bt=toMins(b.to);
+    if(bf>cur) segs.push({type:'study',name:'Study',from:cur,to:bf,dur:bf-cur});
+    segs.push({type:'break',name:b.name,from:bf,to:bt,dur:bt-bf,id:b.id});
+    cur=bt;
+  });
+  if(cur<sleepM) segs.push({type:'study',name:'Study',from:cur,to:sleepM,dur:sleepM-cur});
+  segs.push({type:'anchor',name:'Sleep',from:sleepM,to:sleepM,dur:0});
+
+  const totalStudy=segs.filter(s=>s.type==='study').reduce((a,s)=>a+s.dur,0);
+  const totEl=document.getElementById('study-total');
+  if(totEl){ const h=Math.floor(totalStudy/60),m=totalStudy%60; totEl.textContent=m>0?`${h} hrs ${m} min`:`${h} hrs`; }
+
+  const el=document.getElementById('sched-timeline'); if(!el) return;
+  el.innerHTML=segs.map(s=>{
+    const cls=s.type==='study'?'study-block':s.type==='anchor'?'anchor-block':'break-block';
+    const del=s.type==='break'?`<button class="del-brk" onclick="deleteBreak('${s.id}')">×</button>`:'';
+    return `<div class="day-block ${cls}">
+      <div class="day-block-time">${fmtTime(s.from)}</div>
+      <div class="day-block-bar"></div>
+      <div class="day-block-content">
+        <span class="day-block-name">${s.name}</span>
+        <span style="display:flex;align-items:center;gap:8px">${s.dur>0?`<span class="day-block-dur">${fmtDur(s.dur)}</span>`:''}${del}</span>
+      </div></div>`;
+  }).join('');
+}
+
+function saveSchedData(){
+  const wake=document.getElementById('anchor-wake')?.value||'05:30';
+  const sleep=document.getElementById('anchor-sleep')?.value||'23:00';
+  patchState({schedAnchors:{wake,sleep},schedBreaks:getBreaks()});
+  buildScheduleUI();
+}
+function addBreak(){
+  const name=document.getElementById('brk-name').value.trim();
+  const from=document.getElementById('brk-from').value;
+  const to=document.getElementById('brk-to').value;
+  if(!name||!from||!to){alert('Please fill in name, from and to times.');return;}
+  if(toMins(from)>=toMins(to)){alert('Start time must be before end time.');return;}
+  const breaks=getBreaks(); breaks.push({id:'b'+Date.now(),name,from,to});
+  patchState({schedBreaks:breaks});
+  document.getElementById('brk-name').value=''; document.getElementById('brk-from').value=''; document.getElementById('brk-to').value='';
+  buildScheduleUI();
+}
+function deleteBreak(id){ patchState({schedBreaks:getBreaks().filter(b=>b.id!==id)}); buildScheduleUI(); }
+function resetBreaks(){
+  if(!confirm('Reset schedule to defaults?'))return;
+  delete localCache.schedAnchors; delete localCache.schedBreaks;
+  localStorage.setItem('caf_local_cache',JSON.stringify(localCache));
+  pushToFirebase(); buildScheduleUI();
+}
+// Legacy stubs
+function getSchedule(){ return []; }
+function saveSchedule(){}
+
+
+
+// ═══════════════════════════════════════════════════════
+//  UI: CHAPTERS
+// ═══════════════════════════════════════════════════════
+function buildChapters(){
+  const c=document.getElementById('ch-container');
+  PAPERS.filter(p=>p.total>0).forEach(p=>{
+    const chs=CHAPTERS.filter(ch=>ch.paper===p.id);
+    const done=chs.filter(ch=>getChStatus(ch.num,'lec')===2).length;
+    const block=document.createElement('div');
+    block.className='ch-paper-block'; block.id='cpb_'+p.id;
+    block.innerHTML=`
+      <div class="ch-paper-hdr" onclick="togglePaperBlock('${p.id}')">
+        <div class="ch-paper-left">
+          <div class="ch-paper-dot" style="background:${p.color}"></div>
+          <div><div class="ch-paper-name">${p.short} — ${p.name}</div><div class="ch-paper-info">${p.total} chapters</div></div>
+        </div>
+        <div class="ch-paper-right">
+          <div class="pbar-wrap" style="width:80px"><div class="pbar" id="chbar_${p.id}" style="background:${p.color};width:${Math.round(done/chs.length*100)}%"></div></div>
+          <div class="ch-pct" id="chpct_${p.id}" style="color:${p.color}">${Math.round(done/chs.length*100)}%</div>
+          <div class="chevron">▼</div>
+        </div>
+      </div>
+      <div class="ch-table" id="cht_${p.id}">
+        <div class="ch-hdr-row"><div>#</div><div>Chapter</div><div>Key Topics</div>${COLS.map(c=>`<div style="text-align:center">${c}</div>`).join('')}</div>
+        ${chs.map(ch=>`
+          <div class="ch-data-row">
+            <div class="ch-num">${ch.ch}</div>
+            <div class="ch-name-cell">${ch.name}</div>
+            <div class="ch-topic">${ch.topics}</div>
+            ${CKEYS.map(k=>{const v=getChStatus(ch.num,k);return `<div style="display:flex;justify-content:center"><button class="status-btn${v===2?' done':v===1?' ip':''}" id="sb_${ch.num}_${k}" onclick="cycleChStatus(${ch.num},'${k}')">${v===2?'✓':v===1?'↻':''}</button></div>`;}).join('')}
+          </div>`).join('')}
+      </div>`;
+    c.appendChild(block);
+  });
+}
+function togglePaperBlock(id){ document.getElementById('cpb_'+id).classList.toggle('open'); }
+function cycleChStatus(num,col){
+  const k='ch_'+num+'_'+col;
+  const cur=(localCache[k]||0);
+  const next=(cur+1)%3;
+  const patch={}; patch[k]=next;
+  Object.assign(localCache,patch);
+  localStorage.setItem('caf_local_cache',JSON.stringify(localCache));
+  pushToFirebase();
+  const btn=document.getElementById('sb_'+num+'_'+col);
+  if(btn){ btn.className='status-btn'+(next===2?' done':next===1?' ip':''); btn.textContent=next===2?'✓':next===1?'↻':''; }
+  updateChapterPcts();
+  updateDashboard();
+}
+function updateChapterPcts(){
+  PAPERS.filter(p=>p.total>0).forEach(p=>{
+    const chs=CHAPTERS.filter(c=>c.paper===p.id);
+    const done=chs.filter(c=>getChStatus(c.num,'lec')===2).length;
+    const pct=Math.round(done/chs.length*100);
+    const pe=document.getElementById('chpct_'+p.id); if(pe) pe.textContent=pct+'%';
+    const be=document.getElementById('chbar_'+p.id); if(be) be.style.width=pct+'%';
+  });
+}
+
+// ═══════════════════════════════════════════════════════
+//  UI: MOCKS
+// ═══════════════════════════════════════════════════════
+function buildMocks(){
+  const c=document.getElementById('mock-container');
+  const ms=localCache.mocks||{};
+  MOCK_SECTIONS.forEach(m=>{
+    const done=m.items.filter((_,i)=>ms[m.id+'_'+i]).length;
+    const d=document.createElement('div');
+    d.className='mock-card'; d.id='mcard_'+m.id;
+    d.innerHTML=`
+      <div class="mock-title" style="color:${m.color}">${m.title}</div>
+      <div class="mock-date">${m.dates}</div>
+      <div class="mock-papers">
+        ${m.items.map((item,i)=>{const key=m.id+'_'+i;const isDone=ms[key]||false;return `<div class="mock-paper-row"><span class="mock-paper-name">${item}</span><div class="check-box${isDone?' done':''}" id="cb_${key}" onclick="toggleMock('${key}')">${isDone?'✓':''}</div></div>`;}).join('')}
+      </div>
+      <div><div class="mock-prog-label"><span>${done}/${m.items.length} done</span><span>${Math.round(done/m.items.length*100)}%</span></div>
+      <div class="pbar-wrap"><div class="pbar" id="mpbar_${m.id}" style="background:${m.color};width:${Math.round(done/m.items.length*100)}%"></div></div></div>`;
+    c.appendChild(d);
+  });
+}
+function toggleMock(key){
+  const m=localCache.mocks||{};
+  m[key]=!m[key];
+  patchState({mocks:m});
+  const el=document.getElementById('cb_'+key);
+  if(el){el.classList.toggle('done',m[key]);el.textContent=m[key]?'✓':'';}
+  // Update progress bars
+  MOCK_SECTIONS.forEach(ms=>{
+    const done=ms.items.filter((_,i)=>m[ms.id+'_'+i]).length;
+    const bar=document.getElementById('mpbar_'+ms.id);
+    if(bar) bar.style.width=Math.round(done/ms.items.length*100)+'%';
+  });
+  updateDashboard();
+}
+
+// ═══════════════════════════════════════════════════════
+//  UI: NOTES
+// ═══════════════════════════════════════════════════════
+let activeNoteId=null;
+function buildNotesList(){
+  const notes=getNotes();
+  const el=document.getElementById('notes-list');
+  el.innerHTML='';
+  if(!notes.length){ el.innerHTML='<div style="padding:16px;font-size:12px;color:var(--text3)">No notes yet.</div>'; return; }
+  notes.slice().sort((a,b)=>b.updated-a.updated).forEach(n=>{
+    const d=document.createElement('div');
+    d.className='note-item'+(n.id===activeNoteId?' active':'');
+    d.innerHTML=`<div class="note-item-title">${n.title||'Untitled'}</div><div class="note-item-date">${new Date(n.updated).toLocaleDateString('en-IN',{day:'numeric',month:'short'})}</div>`;
+    d.onclick=()=>openNote(n.id);
+    el.appendChild(d);
+  });
+}
+function openNote(id){
+  const note=getNotes().find(n=>n.id===id); if(!note) return;
+  activeNoteId=id; buildNotesList();
+  document.getElementById('notes-main').innerHTML=`
+    <div class="notes-toolbar">
+      <input class="notes-title-input" id="note-title" value="${(note.title||'').replace(/"/g,'&quot;')}" placeholder="Note title…" oninput="autoSaveNote()">
+      <button class="btn btn-danger btn-sm" onclick="deleteNote('${id}')">Delete</button>
+    </div>
+    <div class="notes-body-wrap">
+      <textarea class="notes-textarea" id="note-body" placeholder="Start writing…" oninput="autoSaveNote()">${note.body||''}</textarea>
+    </div>`;
+  document.getElementById('note-title').focus();
+}
+function newNote(){
+  const note={id:'n'+Date.now(),title:'',body:'',updated:Date.now()};
+  saveNotes([...getNotes(),note]);
+  buildNotesList(); openNote(note.id);
+}
+let saveTimer=null;
+function autoSaveNote(){
+  clearTimeout(saveTimer);
+  saveTimer=setTimeout(()=>{
+    if(!activeNoteId) return;
+    const notes=getNotes(), note=notes.find(n=>n.id===activeNoteId); if(!note) return;
+    note.title=document.getElementById('note-title')?.value||'';
+    note.body=document.getElementById('note-body')?.value||'';
+    note.updated=Date.now();
+    saveNotes(notes); buildNotesList();
+  },600);
+}
+function deleteNote(id){
+  if(!confirm('Delete this note?')) return;
+  saveNotes(getNotes().filter(n=>n.id!==id));
+  activeNoteId=null;
+  document.getElementById('notes-main').innerHTML=`<div class="notes-empty"><div class="notes-empty-icon">📄</div><div style="font-size:13px">Select a note or create a new one</div></div>`;
+  buildNotesList();
+}
+
+// ═══════════════════════════════════════════════════════
+//  FULL UI REFRESH (called after Firebase data loads)
+// ═══════════════════════════════════════════════════════
+function refreshAllUI(){
+  updateDashboard();
+  buildScheduleUI();
+  // Refresh chapter status buttons without full rebuild
+  CHAPTERS.forEach(ch=>{
+    CKEYS.forEach(k=>{
+      const v=getChStatus(ch.num,k);
+      const btn=document.getElementById('sb_'+ch.num+'_'+k);
+      if(btn){ btn.className='status-btn'+(v===2?' done':v===1?' ip':''); btn.textContent=v===2?'✓':v===1?'↻':''; }
+    });
+  });
+  updateChapterPcts();
+  // Refresh mock checkboxes
+  const ms=localCache.mocks||{};
+  MOCK_SECTIONS.forEach(m=>{
+    const done=m.items.filter((_,i)=>ms[m.id+'_'+i]).length;
+    const bar=document.getElementById('mpbar_'+m.id); if(bar) bar.style.width=Math.round(done/m.items.length*100)+'%';
+    m.items.forEach((_,i)=>{
+      const key=m.id+'_'+i, el=document.getElementById('cb_'+key);
+      if(el){ el.classList.toggle('done',!!ms[key]); el.textContent=ms[key]?'✓':''; }
+    });
+  });
+  buildNotesList();
+}
+
+// ═══════════════════════════════════════════════════════
+//  INIT
+// ═══════════════════════════════════════════════════════
+(function init(){
+  // 1. Load local cache immediately (for instant render)
+  try { localCache = JSON.parse(localStorage.getItem('caf_local_cache')||'{}'); } catch(e){ localCache={}; }
+
+  // 2. Render all static UI
+  countdown();
+  buildTimeline();
+  buildScheduleUI();
+  buildChapters();
+  buildMocks();
+  buildNotesList();
+  updateDashboard();
+
+  // 3. Hide loading screen
+  const ls = document.getElementById('loading-screen');
+  ls.classList.add('hidden');
+  setTimeout(()=>{ ls.style.display='none'; }, 400);
+
+  // 4. Connect to Firebase immediately — config is hardcoded
+  initFirebase(FIREBASE_CONFIG);
+})();
+</script>
+</body>
+</html>
