@@ -371,12 +371,15 @@ function initFirebase(config){
     setSyncStatus('syncing','Connecting…');
     dbRef.on('value', snap=>{
       const data=snap.val()||{};
-      if(!data.notes || data.notes.length===0){
+      // Only use localStorage backup if Firebase has NEVER had notes (truly new device/db)
+      // Once Firebase is connected, it is always the source of truth — never restore over it
+      if(!isFirebaseReady && (!data.notes || data.notes.length===0)){
         try{ const backup=JSON.parse(localStorage.getItem(NOTES_BACKUP_KEY)||'[]'); if(backup.length>0) data.notes=backup; }catch(e){}
       }
       localCache=data;
       localStorage.setItem('caf_local_cache', JSON.stringify(localCache));
-      if(localCache.notes && localCache.notes.length>0) backupNotesLocally(localCache.notes);
+      // Sync backup to match Firebase (including deletions)
+      backupNotesLocally(localCache.notes||[]);
       setSyncStatus('connected','Synced');
       refreshAllUI();
     }, ()=>setSyncStatus('offline','Offline'));
@@ -463,8 +466,11 @@ function updateDashboard(){
     CKEYS.forEach(k=>{counts[k]={done:0,ip:0};});
     chs.forEach(c=>{CKEYS.forEach(k=>{const v=getChStatus(c.num,k);if(v===2)counts[k].done++;else if(v===1)counts[k].ip++;});});
     const lDone=counts['lec'].done;
+    // Overall progress = total done ticks across all 6 columns out of max possible
+    const totalTicks=CKEYS.reduce((a,k)=>a+counts[k].done,0);
+    const maxTicks=chs.length*CKEYS.length;
     const chips=CKEYS.map((k,i)=>{const d=counts[k].done,ip=counts[k].ip;const cls=d===chs.length?'done':ip>0?'ip':'';const txt=d===chs.length?'✓':ip>0?ip+'↻':COLS[i];return`<div class="col-chip ${cls}">${txt}</div>`;}).join('');
-    pl.innerHTML+=`<div class="subj-row"><div class="subj-dot" style="background:${p.color}"></div><div><div class="subj-name">${p.short}</div><div class="pbar-wrap" style="width:80px"><div class="pbar" style="background:${p.color};width:${Math.round(lDone/chs.length*100)}%"></div></div></div><div style="font-size:11px;color:var(--text2);min-width:50px">${lDone}/${chs.length} Lec</div><div class="subj-cols">${chips}</div></div>`;
+    pl.innerHTML+=`<div class="subj-row"><div class="subj-dot" style="background:${p.color}"></div><div><div class="subj-name">${p.short}</div><div class="pbar-wrap" style="width:80px"><div class="pbar" style="background:${p.color};width:${Math.round(totalTicks/maxTicks*100)}%"></div></div></div><div style="font-size:11px;color:var(--text2);min-width:50px">${lDone}/${chs.length} Lec</div><div class="subj-cols">${chips}</div></div>`;
   });
   const ipEl=document.getElementById('ip-list'), ipItems=[];
   PAPERS.filter(p=>p.total>0).forEach(p=>{CHAPTERS.filter(c=>c.paper===p.id).forEach(c=>{CKEYS.forEach((k,i)=>{if(getChStatus(c.num,k)===1)ipItems.push({paper:p.short,color:p.color,chapter:c.name,col:COLS[i]});});});});
@@ -541,10 +547,12 @@ function buildChapters(){
   const c=document.getElementById('ch-container');
   PAPERS.filter(p=>p.total>0).forEach(p=>{
     const chs=CHAPTERS.filter(ch=>ch.paper===p.id);
-    const done=chs.filter(ch=>getChStatus(ch.num,'lec')===2).length;
+    const totalTicks=CKEYS.reduce((a,k)=>a+chs.filter(c=>getChStatus(c.num,k)===2).length,0);
+    const maxTicks=chs.length*CKEYS.length;
+    const initPct=Math.round(totalTicks/maxTicks*100);
     const block=document.createElement('div');
     block.className='ch-paper-block';block.id='cpb_'+p.id;
-    block.innerHTML=`<div class="ch-paper-hdr" onclick="togglePaperBlock('${p.id}')"><div class="ch-paper-left"><div class="ch-paper-dot" style="background:${p.color}"></div><div><div class="ch-paper-name">${p.short} — ${p.name}</div><div class="ch-paper-info">${p.total} chapters</div></div></div><div class="ch-paper-right"><div class="pbar-wrap" style="width:80px"><div class="pbar" id="chbar_${p.id}" style="background:${p.color};width:${Math.round(done/chs.length*100)}%"></div></div><div class="ch-pct" id="chpct_${p.id}" style="color:${p.color}">${Math.round(done/chs.length*100)}%</div><div class="chevron">▼</div></div></div><div class="ch-table" id="cht_${p.id}"><div class="ch-hdr-row"><div>#</div><div>Chapter</div><div>Key Topics</div>${COLS.map(c=>`<div style="text-align:center">${c}</div>`).join('')}</div>${chs.map(ch=>`<div class="ch-data-row"><div class="ch-num">${ch.ch}</div><div class="ch-name-cell">${ch.name}</div><div class="ch-topic">${ch.topics}</div>${CKEYS.map(k=>{const v=getChStatus(ch.num,k);return`<div style="display:flex;justify-content:center"><button class="status-btn${v===2?' done':v===1?' ip':''}" id="sb_${ch.num}_${k}" onclick="cycleChStatus(${ch.num},'${k}')">${v===2?'✓':v===1?'↻':''}</button></div>`;}).join('')}</div>`).join('')}</div>`;
+    block.innerHTML=`<div class="ch-paper-hdr" onclick="togglePaperBlock('${p.id}')"><div class="ch-paper-left"><div class="ch-paper-dot" style="background:${p.color}"></div><div><div class="ch-paper-name">${p.short} — ${p.name}</div><div class="ch-paper-info">${p.total} chapters</div></div></div><div class="ch-paper-right"><div class="pbar-wrap" style="width:80px"><div class="pbar" id="chbar_${p.id}" style="background:${p.color};width:${initPct}%"></div></div><div class="ch-pct" id="chpct_${p.id}" style="color:${p.color}">${initPct}%</div><div class="chevron">▼</div></div></div><div class="ch-table" id="cht_${p.id}"><div class="ch-hdr-row"><div>#</div><div>Chapter</div><div>Key Topics</div>${COLS.map(c=>`<div style="text-align:center">${c}</div>`).join('')}</div>${chs.map(ch=>`<div class="ch-data-row"><div class="ch-num">${ch.ch}</div><div class="ch-name-cell">${ch.name}</div><div class="ch-topic">${ch.topics}</div>${CKEYS.map(k=>{const v=getChStatus(ch.num,k);return`<div style="display:flex;justify-content:center"><button class="status-btn${v===2?' done':v===1?' ip':''}" id="sb_${ch.num}_${k}" onclick="cycleChStatus(${ch.num},'${k}')">${v===2?'✓':v===1?'↻':''}</button></div>`;}).join('')}</div>`).join('')}</div>`;
     c.appendChild(block);
   });
 }
@@ -561,8 +569,9 @@ function cycleChStatus(num,col){
 function updateChapterPcts(){
   PAPERS.filter(p=>p.total>0).forEach(p=>{
     const chs=CHAPTERS.filter(c=>c.paper===p.id);
-    const done=chs.filter(c=>getChStatus(c.num,'lec')===2).length;
-    const pct=Math.round(done/chs.length*100);
+    const totalTicks=CKEYS.reduce((a,k)=>a+chs.filter(c=>getChStatus(c.num,k)===2).length,0);
+    const maxTicks=chs.length*CKEYS.length;
+    const pct=Math.round(totalTicks/maxTicks*100);
     const pe=document.getElementById('chpct_'+p.id);if(pe)pe.textContent=pct+'%';
     const be=document.getElementById('chbar_'+p.id);if(be)be.style.width=pct+'%';
   });
