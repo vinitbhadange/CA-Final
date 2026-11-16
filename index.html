@@ -3,10 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CA Final: November 2026</title>
+<title>CA Final: May 2027</title>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+<script>try{document.documentElement.dataset.theme=localStorage.getItem('caf_theme')||'dark';}catch(e){document.documentElement.dataset.theme='dark';}</script>
 <style>
 *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
 :root {
@@ -133,7 +134,7 @@ h3 { font-size:14px; font-weight:600; margin-bottom:12px; }
 .status-btn.ip { background:var(--amber-bg); border-color:var(--amber); color:#b36600; }
 .mock-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; }
 .mock-card { background:var(--surface); border:1px solid var(--border-light); border-radius:var(--radius); padding:18px; box-shadow:var(--shadow); }
-.mock-title { font-size:14px; font-weight:700; margin-bottom:2px; }
+.mock-title { font-size:14px; font-weight:700; margin-bottom:12px; }
 .mock-date { font-size:11px; color:var(--text2); margin-bottom:12px; }
 .mock-paper-row { display:flex; align-items:center; gap:8px; padding:7px 0; border-bottom:1px solid var(--border-light); }
 .mock-paper-row:last-child { border-bottom:none; }
@@ -187,6 +188,86 @@ h3 { font-size:14px; font-weight:600; margin-bottom:12px; }
   .ch-hdr-row,.ch-data-row{grid-template-columns:24px 1fr repeat(6,30px);}
   .ch-topic{display:none;}
 }
+
+/* ── Dark theme (toggled with the button at top right) ── */
+html[data-theme="dark"] {
+  color-scheme:dark;
+  --bg:#0E0E10; --surface:#1C1C1E; --surface2:#2C2C2E;
+  --border:#3A3A3C; --border-light:#2C2C2E;
+  --text:#FFFFFF; --text2:#D1D1D6; --text3:#8E8E93;
+  --accent:#0A84FF; --accent-bg:rgba(10,132,255,.16);
+  --green:#30D158; --green-bg:rgba(48,209,88,.16);
+  --amber:#FFD60A; --amber-bg:rgba(255,214,10,.14);
+  --red:#FF453A; --red-bg:rgba(255,69,58,.16);
+  --shadow:0 2px 12px rgba(0,0,0,.45),0 1px 3px rgba(0,0,0,.35);
+  --shadow-lg:0 8px 32px rgba(0,0,0,.6),0 2px 8px rgba(0,0,0,.4);
+}
+html[data-theme="dark"] .header, html[data-theme="dark"] .nav { background:rgba(22,22,24,.88); }
+html[data-theme="dark"] .btn-primary { background:#FFFFFF; color:#000; }
+html[data-theme="dark"] .btn-primary:hover { background:#D1D1D6; }
+html[data-theme="dark"] .btn-danger, html[data-theme="dark"] .alert-error { border-color:rgba(255,69,58,.45); }
+html[data-theme="dark"] .col-chip.done, html[data-theme="dark"] .status-btn.done,
+html[data-theme="dark"] .study-block .day-block-name, html[data-theme="dark"] .alert-success { color:var(--green); }
+html[data-theme="dark"] .col-chip.ip, html[data-theme="dark"] .status-btn.ip { color:var(--amber); }
+html[data-theme="dark"] .ip-item { border-color:rgba(255,214,10,.35); }
+html[data-theme="dark"] .study-block .day-block-content, html[data-theme="dark"] .alert-success { border-color:rgba(48,209,88,.4); }
+html[data-theme="dark"] .anchor-block .day-block-content { border-color:rgba(10,132,255,.45); }
+html[data-theme="dark"] .check-box.done { color:#000; }
+html[data-theme="dark"] .modal-overlay { background:rgba(0,0,0,.6); }
+html[data-theme="dark"] input[type="time"]::-webkit-calendar-picker-indicator { filter:invert(1); }
+.theme-btn { width:34px; height:34px; border-radius:50%; border:1px solid var(--border); background:var(--surface); color:var(--amber); font-size:16px; line-height:1; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all .15s; }
+.theme-btn:hover { border-color:var(--text3); }
+
+.ch-cells { display:contents; }
+.ch-cell { display:flex; justify-content:center; }
+.lbl-short { display:none; }
+@media(max-width:768px){
+  /* Header: one compact row, scrolls away; tabs stay pinned */
+  .header{position:static;padding:12px 16px 10px;}
+  .header-inner{flex-wrap:nowrap;align-items:center;gap:10px;}
+  .header-left h1{font-size:17px;margin:0;white-space:nowrap;}
+  .header-right{gap:8px;}
+  .countdown-num{font-size:20px;line-height:1;}
+  .countdown-lbl{font-size:8px;}
+  .sync-pill{padding:5px 9px;font-size:11px;}
+  .theme-btn{width:30px;height:30px;font-size:14px;}
+  .nav{top:0;}
+  .nav-inner{justify-content:space-between;}
+  .nav-btn{padding:0 10px;font-size:12.5px;flex:1 0 auto;}
+  .lbl-long{display:none;} .lbl-short{display:inline;}
+  .section-title,.sec-title{font-size:20px;}
+  .card{padding:16px;}
+  .grid2>*,.grid3>*{min-width:0;}
+  /* Dashboard subject rows: chips drop to their own line */
+  .subj-row{flex-wrap:wrap;row-gap:8px;}
+  .subj-cols{width:100%;justify-content:space-between;padding-left:18px;}
+  .col-chip{flex:1;max-width:44px;height:22px;}
+  /* Chapters: name + topics on top, six status buttons below */
+  .ch-paper-hdr{padding:12px 14px;}
+  .ch-paper-name{font-size:13px;}
+  .ch-hdr-row{display:none;}
+  .ch-data-row{grid-template-columns:22px 1fr;row-gap:6px;padding:12px 14px;align-items:start;}
+  .ch-name-cell{font-size:13px;line-height:1.35;}
+  .ch-topic{display:block;grid-column:2;font-size:11px;line-height:1.4;}
+  .ch-cells{display:grid;grid-column:2;grid-template-columns:repeat(6,1fr);gap:6px;margin-top:2px;}
+  .ch-cell{flex-direction:column;align-items:center;gap:3px;}
+  .ch-cell::before{content:attr(data-col);font-size:9px;font-weight:700;color:var(--text3);letter-spacing:.3px;}
+  .status-btn{width:100%;max-width:44px;height:30px;font-size:12px;}
+  /* Notes */
+  .notes-layout{min-height:0;}
+  .notes-list{max-height:220px;}
+  .notes-empty{min-height:140px;}
+  .notes-textarea{min-height:260px;}
+}
+
+@media(max-width:480px){
+  /* Sync shows as a coloured dot only; tap it for the full status */
+  #sync-label{display:none;}
+  .sync-pill{width:30px;height:30px;padding:0;justify-content:center;border-radius:50%;}
+  .sync-dot{width:9px;height:9px;}
+  .header-left{min-width:0;}
+  .nav-btn{padding:0 8px;font-size:12px;}
+}
 </style>
 </head>
 <body>
@@ -198,7 +279,7 @@ h3 { font-size:14px; font-weight:600; margin-bottom:12px; }
 
 <div class="header">
   <div class="header-inner">
-    <div class="header-left"><h1>CA Final: November 2026</h1></div>
+    <div class="header-left"><h1>CA Final: May 2027</h1></div>
     <div class="header-right">
       <div>
         <div class="countdown-num" id="cd-num">—</div>
@@ -208,6 +289,7 @@ h3 { font-size:14px; font-weight:600; margin-bottom:12px; }
         <div class="sync-dot unconfigured" id="sync-dot"></div>
         <span id="sync-label">Set up sync</span>
       </button>
+      <button class="theme-btn" id="theme-btn" onclick="toggleTheme()" title="Switch light / dark theme" aria-label="Switch light / dark theme"></button>
     </div>
   </div>
 </div>
@@ -217,7 +299,7 @@ h3 { font-size:14px; font-weight:600; margin-bottom:12px; }
     <button class="nav-btn active" onclick="showTab('dashboard',this)">Dashboard</button>
     <button class="nav-btn" onclick="showTab('schedule',this)">Schedule</button>
     <button class="nav-btn" onclick="showTab('chapters',this)">Chapters</button>
-    <button class="nav-btn" onclick="showTab('mocks',this)">Mocks &amp; Revisions</button>
+    <button class="nav-btn" onclick="showTab('mocks',this)"><span class="lbl-long">Mocks &amp; Revisions</span><span class="lbl-short">Mocks</span></button>
     <button class="nav-btn" onclick="showTab('notes',this)">Notes</button>
   </div>
 </nav>
@@ -282,7 +364,7 @@ h3 { font-size:14px; font-weight:600; margin-bottom:12px; }
 
 <div class="section" id="mocks">
   <div class="sec-title">Mocks &amp; Revisions</div>
-  <div class="sec-sub">3 revisions + 2 full mocks. Tick each paper as you complete it.</div>
+  <div class="sec-sub">Lectures, 3 revisions + 2 full mocks. Tick each paper as you complete it.</div>
   <div class="mock-grid" id="mock-container"></div>
 </div>
 
@@ -316,11 +398,12 @@ h3 { font-size:14px; font-weight:600; margin-bottom:12px; }
 // ═══════════════════════════════════════════════════════
 //  STATIC DATA
 // ═══════════════════════════════════════════════════════
-const CHAPTERS=[{"num":1,"paper":"P1-FR","mod":"M1","ch":1,"name":"Conceptual Framework & Standards","topics":"IND AS Framework, IFRS"},{"num":2,"paper":"P1-FR","mod":"M1","ch":2,"name":"Ind AS 1: Presentation of FS","topics":"OCI, Comparative, Going Concern"},{"num":3,"paper":"P1-FR","mod":"M1","ch":3,"name":"Ind AS 7: Cash Flow Statements","topics":"Direct/Indirect, IAS 7"},{"num":4,"paper":"P1-FR","mod":"M1","ch":4,"name":"Ind AS 8: Accounting Policies","topics":"Changes, Errors, Estimates"},{"num":5,"paper":"P1-FR","mod":"M1","ch":5,"name":"Ind AS 10: Events after BS Date","topics":"Adjusting/Non-adjusting"},{"num":6,"paper":"P1-FR","mod":"M2","ch":6,"name":"Ind AS 16: PPE","topics":"Component, Revaluation"},{"num":7,"paper":"P1-FR","mod":"M2","ch":7,"name":"Ind AS 38: Intangible Assets","topics":"Recognition, Amortisation"},{"num":8,"paper":"P1-FR","mod":"M2","ch":8,"name":"Ind AS 40: Investment Property","topics":"Cost/Fair Value model"},{"num":9,"paper":"P1-FR","mod":"M2","ch":9,"name":"Ind AS 17/116: Leases","topics":"ROU Asset, Lease Liability"},{"num":10,"paper":"P1-FR","mod":"M2","ch":10,"name":"Ind AS 36: Impairment of Assets","topics":"CGU, VIU, FVLCD"},{"num":11,"paper":"P1-FR","mod":"M2","ch":11,"name":"Ind AS 23: Borrowing Costs","topics":"Qualifying Asset"},{"num":12,"paper":"P1-FR","mod":"M2","ch":12,"name":"Ind AS 20: Govt Grants","topics":"Asset/Income approach"},{"num":13,"paper":"P1-FR","mod":"M3","ch":13,"name":"Ind AS 2: Inventories","topics":"NRV, Cost formulas"},{"num":14,"paper":"P1-FR","mod":"M3","ch":14,"name":"Ind AS 11/115: Revenue","topics":"POB, 5-step model"},{"num":15,"paper":"P1-FR","mod":"M3","ch":15,"name":"Ind AS 37: Provisions & Contingencies","topics":"Present obligation, Probable"},{"num":16,"paper":"P1-FR","mod":"M4","ch":16,"name":"Ind AS 32/109/107: Financial Instruments","topics":"FVTPL, FVTOCI, Amortised Cost"},{"num":17,"paper":"P1-FR","mod":"M4","ch":17,"name":"Ind AS 103: Business Combinations","topics":"Acquisition method, Goodwill"},{"num":18,"paper":"P1-FR","mod":"M4","ch":18,"name":"Ind AS 110/111/112/28: Consolidation","topics":"CFS, NCI, Equity method"},{"num":19,"paper":"P1-FR","mod":"M5","ch":19,"name":"Ind AS 12: Income Taxes (DTA/DTL)","topics":"Temp diff, Deferred Tax"},{"num":20,"paper":"P1-FR","mod":"M5","ch":20,"name":"Ind AS 19: Employee Benefits","topics":"Defined benefit, Actuarial"},{"num":21,"paper":"P1-FR","mod":"M5","ch":21,"name":"Ind AS 102: Share-based Payment","topics":"ESOP, Fair value"},{"num":22,"paper":"P1-FR","mod":"M5","ch":22,"name":"Ind AS 33: EPS","topics":"Basic, Diluted"},{"num":23,"paper":"P2-AFM","mod":"M1","ch":1,"name":"Financial Policy & Corporate Strategy","topics":"EVA, Shareholder value"},{"num":24,"paper":"P2-AFM","mod":"M1","ch":2,"name":"Risk Management","topics":"Types, ERM framework"},{"num":25,"paper":"P2-AFM","mod":"M1","ch":3,"name":"Security Analysis","topics":"Technical & Fundamental"},{"num":26,"paper":"P2-AFM","mod":"M1","ch":4,"name":"Portfolio Management","topics":"Markowitz, CAPM, Sharpe"},{"num":27,"paper":"P2-AFM","mod":"M2","ch":5,"name":"Derivatives – Futures & Forwards","topics":"Hedging, Pricing"},{"num":28,"paper":"P2-AFM","mod":"M2","ch":6,"name":"Derivatives – Options","topics":"Black-Scholes, Greeks"},{"num":29,"paper":"P2-AFM","mod":"M2","ch":7,"name":"Derivatives – Swaps","topics":"Interest rate, Currency"},{"num":30,"paper":"P2-AFM","mod":"M2","ch":8,"name":"Interest Rate Risk Management","topics":"Duration, Convexity"},{"num":31,"paper":"P2-AFM","mod":"M3","ch":9,"name":"Foreign Exchange Exposure","topics":"Hedging, PPP, IRP"},{"num":32,"paper":"P2-AFM","mod":"M3","ch":10,"name":"International Financial Management","topics":"ADR/GDR, ECB, FCCB"},{"num":33,"paper":"P2-AFM","mod":"M4","ch":11,"name":"Corporate Valuation","topics":"DCF, Relative, EVA"},{"num":34,"paper":"P2-AFM","mod":"M4","ch":12,"name":"Mergers, Acquisitions & Restructuring","topics":"Synergy, Post-merger EPS"},{"num":35,"paper":"P2-AFM","mod":"M4","ch":13,"name":"Startup Finance & Venture Capital","topics":"Term sheet, Valuation"},{"num":36,"paper":"P2-AFM","mod":"M4","ch":14,"name":"Project Finance & Infrastructure","topics":"SPV, Concession"},{"num":37,"paper":"P2-AFM","mod":"M4","ch":15,"name":"Leasing","topics":"Finance vs Operating"},{"num":38,"paper":"P3-Audit","mod":"M1","ch":1,"name":"Quality Control (SQC 1, SA 220)","topics":"EQCR, Engagement partner"},{"num":39,"paper":"P3-Audit","mod":"M1","ch":2,"name":"General Auditing Principles","topics":"SA 240/250/260/299/402"},{"num":40,"paper":"P3-Audit","mod":"M1","ch":3,"name":"Audit Planning & Procedures","topics":"SA 300/450/520/540/610/620"},{"num":41,"paper":"P3-Audit","mod":"M1","ch":4,"name":"Risk Assessment & Internal Control","topics":"SA 265/330"},{"num":42,"paper":"P3-Audit","mod":"M1","ch":5,"name":"Audit Evidence","topics":"SA 500/501/505/510/530/550"},{"num":43,"paper":"P3-Audit","mod":"M1","ch":6,"name":"Completion & Review","topics":"SA 560/570/580"},{"num":44,"paper":"P3-Audit","mod":"M1","ch":7,"name":"Reporting","topics":"SA 700/701/705/706/710/720"},{"num":45,"paper":"P3-Audit","mod":"M2","ch":8,"name":"Specialised Areas","topics":"SA 800/805/810"},{"num":46,"paper":"P3-Audit","mod":"M2","ch":9,"name":"Related Services","topics":"SRS 4400/4410"},{"num":47,"paper":"P3-Audit","mod":"M2","ch":10,"name":"Review Engagements","topics":"SRE 2400/2410"},{"num":48,"paper":"P3-Audit","mod":"M2","ch":11,"name":"Assurance Engagements","topics":"SAE 3400/3402/3420"},{"num":49,"paper":"P3-Audit","mod":"M2","ch":12,"name":"Digital Auditing","topics":"CAAT, Data Analytics, AI"},{"num":50,"paper":"P3-Audit","mod":"M2","ch":13,"name":"Group Audits","topics":"SA 600"},{"num":51,"paper":"P3-Audit","mod":"M2","ch":14,"name":"Banks & NBFCs","topics":"RBI, Concurrent Audit"},{"num":52,"paper":"P3-Audit","mod":"M3","ch":15,"name":"PSU Audits","topics":"CAG, C&AG"},{"num":53,"paper":"P3-Audit","mod":"M3","ch":16,"name":"Internal Audit","topics":"ICAI Standards on IA"},{"num":54,"paper":"P3-Audit","mod":"M3","ch":17,"name":"Due Diligence & Forensic","topics":"Investigation, FAIS"},{"num":55,"paper":"P3-Audit","mod":"M3","ch":18,"name":"ESG & Sustainability Assurance","topics":"SDG, Non-financial"},{"num":56,"paper":"P3-Audit","mod":"M3","ch":19,"name":"Professional Ethics","topics":"CA Act 1949, Regulations"},{"num":57,"paper":"P4-DT","mod":"M1","ch":1,"name":"Basic Concepts","topics":"AY, PY, Rates, Surcharge"},{"num":58,"paper":"P4-DT","mod":"M1","ch":2,"name":"Incomes not forming part of Total Income","topics":"Sec 10, 14A"},{"num":59,"paper":"P4-DT","mod":"M1","ch":3,"name":"PGBP","topics":"Sec 28–44"},{"num":60,"paper":"P4-DT","mod":"M1","ch":4,"name":"Capital Gains","topics":"Sec 45–55A, 111A, 112A"},{"num":61,"paper":"P4-DT","mod":"M1","ch":5,"name":"Income from Other Sources","topics":"Sec 56–59"},{"num":62,"paper":"P4-DT","mod":"M1","ch":6,"name":"Clubbing of Income","topics":"Sec 60–65"},{"num":63,"paper":"P4-DT","mod":"M1","ch":7,"name":"Set-off & Carry Forward of Losses","topics":"Sec 70–80"},{"num":64,"paper":"P4-DT","mod":"M1","ch":8,"name":"Deductions from GTI","topics":"Sec 80C–80U"},{"num":65,"paper":"P4-DT","mod":"M2","ch":9,"name":"Assessment of Various Entities","topics":"115BAA/BAB/BAC, Firms"},{"num":66,"paper":"P4-DT","mod":"M2","ch":10,"name":"Trusts, Institutions & Special Entities","topics":"Sec 11–13, Political parties"},{"num":67,"paper":"P4-DT","mod":"M2","ch":11,"name":"Tax Planning, Avoidance & Evasion","topics":"GAAR, Chapter X-A"},{"num":68,"paper":"P4-DT","mod":"M2","ch":12,"name":"Taxation of Digital Transactions","topics":"VDA, Sec 115BBH"},{"num":69,"paper":"P4-DT","mod":"M3","ch":13,"name":"Deduction, Collection & Recovery","topics":"TDS Sec 192–196D, TCS"},{"num":70,"paper":"P4-DT","mod":"M3","ch":14,"name":"Income-tax Authorities","topics":"CBDT, AO, CIT"},{"num":71,"paper":"P4-DT","mod":"M3","ch":15,"name":"Assessment Procedure","topics":"Sec 139, 143, 147, 153A"},{"num":72,"paper":"P4-DT","mod":"M3","ch":16,"name":"Appeals and Revision","topics":"CIT(A), ITAT, HC, SC"},{"num":73,"paper":"P4-DT","mod":"M3","ch":17,"name":"Dispute Resolution","topics":"DRP, APA, Faceless"},{"num":74,"paper":"P4-DT","mod":"M3","ch":18,"name":"Miscellaneous Provisions","topics":"Survey, Search, Interest"},{"num":75,"paper":"P4-DT","mod":"M3","ch":19,"name":"Counteracting Unethical Tax Practices","topics":"Black Money, Penalties"},{"num":76,"paper":"P4-DT","mod":"M3","ch":20,"name":"Tax Audit & Ethics","topics":"Sec 44AB, 3CA/3CB/3CD"},{"num":77,"paper":"P4-DT","mod":"M4","ch":21,"name":"Non-resident Taxation","topics":"Sec 5, 9, 115E/AD"},{"num":78,"paper":"P4-DT","mod":"M4","ch":22,"name":"Double Taxation Relief","topics":"Sec 90/91, DTAA"},{"num":79,"paper":"P4-DT","mod":"M4","ch":23,"name":"Advance Rulings","topics":"AAR/BAR"},{"num":80,"paper":"P4-DT","mod":"M4","ch":24,"name":"Transfer Pricing","topics":"ALP, APAs, CbCR"},{"num":81,"paper":"P4-DT","mod":"M4","ch":25,"name":"Fundamentals of BEPS","topics":"OECD Action Plans 1-15"},{"num":82,"paper":"P4-DT","mod":"M4","ch":26,"name":"Application of Tax Treaties","topics":"PE, LOB, Beneficial owner"},{"num":83,"paper":"P4-DT","mod":"M4","ch":27,"name":"Overview of Model Tax Conventions","topics":"OECD/UN Model"},{"num":84,"paper":"P4-DT","mod":"M4","ch":28,"name":"Latest Developments in Intl Tax","topics":"Digital economy, MLI"},{"num":85,"paper":"P5-IDT","mod":"M1","ch":1,"name":"Supply under GST","topics":"Sec 7/8; Sch I-III"},{"num":86,"paper":"P5-IDT","mod":"M1","ch":2,"name":"Charge of GST","topics":"Sec 9 CGST, RCM"},{"num":87,"paper":"P5-IDT","mod":"M1","ch":3,"name":"Place of Supply","topics":"Sec 10-13 IGST"},{"num":88,"paper":"P5-IDT","mod":"M1","ch":4,"name":"Exemptions from GST","topics":"Sec 11; Notfns 12/13"},{"num":89,"paper":"P5-IDT","mod":"M1","ch":5,"name":"Time of Supply","topics":"Sec 12/13/14 CGST"},{"num":90,"paper":"P5-IDT","mod":"M1","ch":6,"name":"Value of Supply","topics":"Sec 15; Valuation Rules"},{"num":91,"paper":"P5-IDT","mod":"M2","ch":7,"name":"Input Tax Credit","topics":"Sec 16/17/18; Blocked"},{"num":92,"paper":"P5-IDT","mod":"M2","ch":8,"name":"Registration","topics":"Sec 22–30"},{"num":93,"paper":"P5-IDT","mod":"M2","ch":9,"name":"Tax Invoice, Credit & Debit Notes","topics":"Sec 31/34; E-Invoice"},{"num":94,"paper":"P5-IDT","mod":"M2","ch":10,"name":"Accounts, Records & E-way Bill","topics":"Sec 35/36; E-way Rules"},{"num":95,"paper":"P5-IDT","mod":"M2","ch":11,"name":"Payment of Tax","topics":"Sec 49/51/52"},{"num":96,"paper":"P5-IDT","mod":"M2","ch":12,"name":"Electronic Commerce Transactions","topics":"Sec 9(5), 52"},{"num":97,"paper":"P5-IDT","mod":"M2","ch":13,"name":"Returns","topics":"GSTR-1/3B/9/9C"},{"num":98,"paper":"P5-IDT","mod":"M3","ch":14,"name":"Import & Export under GST","topics":"Sec 16 IGST; Zero-rated"},{"num":99,"paper":"P5-IDT","mod":"M3","ch":15,"name":"Refunds","topics":"Sec 54/55"},{"num":100,"paper":"P5-IDT","mod":"M3","ch":16,"name":"Job Work","topics":"Sec 143, 2(68)"},{"num":101,"paper":"P5-IDT","mod":"M3","ch":17,"name":"Assessment & Audit","topics":"Sec 59–66"},{"num":102,"paper":"P5-IDT","mod":"M3","ch":18,"name":"Inspection, Search & Arrest","topics":"Sec 67–71"},{"num":103,"paper":"P5-IDT","mod":"M3","ch":19,"name":"Demands & Recovery","topics":"Sec 73/74/75/79"},{"num":104,"paper":"P5-IDT","mod":"M3","ch":20,"name":"Liability to Pay in Certain Cases","topics":"Sec 85–90"},{"num":105,"paper":"P5-IDT","mod":"M3","ch":21,"name":"Offences, Penalties & Ethics","topics":"Sec 122–130"},{"num":106,"paper":"P5-IDT","mod":"M3","ch":22,"name":"Appeals & Revision","topics":"Sec 107/108/112"},{"num":107,"paper":"P5-IDT","mod":"M3","ch":23,"name":"Advance Ruling","topics":"Sec 95–106"},{"num":108,"paper":"P5-IDT","mod":"M3","ch":24,"name":"Miscellaneous Provisions","topics":"Sec 171 Anti-profiteering"},{"num":109,"paper":"P5-IDT","mod":"M4","ch":1,"name":"Levy & Exemptions – Customs","topics":"Sec 12/14 Customs Act"},{"num":110,"paper":"P5-IDT","mod":"M4","ch":2,"name":"Types of Duty","topics":"BCD, CVD, Anti-dumping"},{"num":111,"paper":"P5-IDT","mod":"M4","ch":3,"name":"Classification – Customs","topics":"CTA 1975; HSN"},{"num":112,"paper":"P5-IDT","mod":"M4","ch":4,"name":"Valuation under Customs","topics":"Sec 14; Valuation Rules"},{"num":113,"paper":"P5-IDT","mod":"M4","ch":5,"name":"Importation & Exportation of Goods","topics":"Bill of Entry; Shipping Bill"},{"num":114,"paper":"P5-IDT","mod":"M4","ch":6,"name":"Warehousing","topics":"Sec 57–73"},{"num":115,"paper":"P5-IDT","mod":"M4","ch":7,"name":"Refund – Customs","topics":"Sec 27; Unjust enrichment"},{"num":116,"paper":"P5-IDT","mod":"M4","ch":8,"name":"Foreign Trade Policy","topics":"EPCG, Adv Auth, RoDTEP"}];
+const CHAPTERS=[{"num":1,"paper":"P1-FR","mod":"M1","ch":1,"name":"Introduction to Indian Accounting Standards","topics":"Ind AS roadmap & applicability, Carve-outs/ins vs IFRS, Division II of Schedule III"},{"num":2,"paper":"P1-FR","mod":"M1","ch":2,"name":"Conceptual Framework for Financial Reporting under Ind AS","topics":"Qualitative characteristics, Elements, Recognition, Measurement bases"},{"num":3,"paper":"P1-FR","mod":"M1","ch":3,"name":"Ind AS on Presentation of General Purpose Financial Statements","topics":"Ind AS 1 Presentation, Ind AS 34 Interim, Ind AS 7 Cash Flows"},{"num":4,"paper":"P1-FR","mod":"M1","ch":4,"name":"Ind AS on Measurement based on Accounting Policies","topics":"Ind AS 8 Policies/Estimates/Errors, Ind AS 10 Events after RP, Ind AS 113 Fair Value"},{"num":5,"paper":"P1-FR","mod":"M2","ch":5,"name":"Ind AS on Assets of the Financial Statements","topics":"Ind AS 2, 16, 23, 36, 38, 40, 105 (Held for sale), 116 Leases"},{"num":6,"paper":"P1-FR","mod":"M3","ch":6,"name":"Ind AS on Liabilities of the Financial Statements","topics":"Ind AS 19 Employee Benefits, Ind AS 37 Provisions & Contingencies"},{"num":7,"paper":"P1-FR","mod":"M3","ch":7,"name":"Ind AS on Items impacting the Financial Statements","topics":"Ind AS 12 Income Taxes, Ind AS 21 Foreign Exchange"},{"num":8,"paper":"P1-FR","mod":"M3","ch":8,"name":"Ind AS on Disclosures in the Financial Statements","topics":"Ind AS 24 Related Parties, Ind AS 33 EPS, Ind AS 108 Operating Segments"},{"num":9,"paper":"P1-FR","mod":"M4","ch":9,"name":"Ind AS 115: Revenue from Contracts with Customers","topics":"5-step model, Performance obligations, Variable consideration, Contract costs"},{"num":10,"paper":"P1-FR","mod":"M4","ch":10,"name":"Other Indian Accounting Standards","topics":"Ind AS 41 Agriculture, Ind AS 20 Govt Grants, Ind AS 102 Share-based Payment"},{"num":11,"paper":"P1-FR","mod":"M4","ch":11,"name":"Accounting and Reporting of Financial Instruments","topics":"Ind AS 32/109/107: Classification, Amortised cost, ECL, Derivatives, Derecognition, Hedge accounting"},{"num":12,"paper":"P1-FR","mod":"M5","ch":12,"name":"Ind AS 103: Business Combinations","topics":"Acquisition method, Goodwill/Bargain purchase, Common control, Reverse acquisition"},{"num":13,"paper":"P1-FR","mod":"M5","ch":13,"name":"Consolidated and Separate Financial Statements of Group Entities","topics":"Ind AS 110 Consolidation, 111 Joint Arrangements, 28 Associates/JV, 27 Separate FS"},{"num":14,"paper":"P1-FR","mod":"M5","ch":14,"name":"Ind AS 101: First-time Adoption of Ind AS","topics":"Opening Ind AS BS, Mandatory exceptions, Optional exemptions"},{"num":15,"paper":"P1-FR","mod":"M5","ch":15,"name":"Analysis of Financial Statements","topics":"Ind AS compliance review, Errors in published FS, Ratio interpretation"},{"num":16,"paper":"P1-FR","mod":"M5","ch":16,"name":"Professional and Ethical Duty of a Chartered Accountant","topics":"Ethical dilemmas, Code of Ethics in financial reporting"},{"num":17,"paper":"P1-FR","mod":"M5","ch":17,"name":"Accounting and Technology","topics":"Digital tools, Data analytics, AI & blockchain in accounting"},{"num":18,"paper":"P2-AFM","mod":"M1","ch":1,"name":"Financial Policy and Corporate Strategy","topics":"Strategic financial decisions, Sustainable growth, Financial planning"},{"num":19,"paper":"P2-AFM","mod":"M1","ch":2,"name":"Risk Management","topics":"Types of risk, VaR, Risk evaluation & mitigation"},{"num":20,"paper":"P2-AFM","mod":"M1","ch":3,"name":"Advanced Capital Budgeting Decisions","topics":"Risk-adjusted NPV, Sensitivity/Scenario, Real options, Capital rationing"},{"num":21,"paper":"P2-AFM","mod":"M1","ch":4,"name":"Security Analysis","topics":"Fundamental analysis, Technical analysis, Efficient Market Hypothesis"},{"num":22,"paper":"P2-AFM","mod":"M1","ch":5,"name":"Security Valuation","topics":"Equity (DDM, Gordon), Bonds (YTM, Duration), Preference & convertibles"},{"num":23,"paper":"P2-AFM","mod":"M1","ch":6,"name":"Portfolio Management","topics":"Markowitz, CAPM, APT, Sharpe/Treynor/Jensen, Sharpe index model"},{"num":24,"paper":"P2-AFM","mod":"M2","ch":7,"name":"Securitization","topics":"Process & participants, PTC/PAC/TAC, Pricing, Risks"},{"num":25,"paper":"P2-AFM","mod":"M2","ch":8,"name":"Mutual Funds","topics":"NAV, Types of schemes, Performance evaluation, ETFs"},{"num":26,"paper":"P2-AFM","mod":"M2","ch":9,"name":"Derivatives Analysis and Valuation","topics":"Futures & forwards pricing, Options (Binomial, Black-Scholes), Greeks, Commodity derivatives"},{"num":27,"paper":"P2-AFM","mod":"M3","ch":10,"name":"Foreign Exchange Exposure and Risk Management","topics":"Exchange rates, IRP/PPP, Forward cover, Money market hedge, Currency swaps"},{"num":28,"paper":"P2-AFM","mod":"M3","ch":11,"name":"International Financial Management","topics":"International capital budgeting, ADR/GDR, ECB, Euro bonds"},{"num":29,"paper":"P2-AFM","mod":"M3","ch":12,"name":"Interest Rate Risk Management","topics":"FRA, Interest rate futures, Caps/Floors/Collars, Swaps & Swaptions"},{"num":30,"paper":"P2-AFM","mod":"M4","ch":13,"name":"Business Valuation","topics":"FCFF/FCFE DCF, Relative valuation, EVA/MVA, Valuation of intangibles"},{"num":31,"paper":"P2-AFM","mod":"M4","ch":14,"name":"Mergers, Acquisitions and Corporate Restructuring","topics":"Synergy, Swap ratio, Post-merger EPS/MPS, Demerger, Buyback, Takeover"},{"num":32,"paper":"P2-AFM","mod":"M4","ch":15,"name":"Startup Finance","topics":"Angel/VC/PE funding, Pitch deck, Bootstrapping, Unicorns"},{"num":33,"paper":"P3-Audit","mod":"M1","ch":1,"name":"Quality Control","topics":"SQC 1, SA 220, EQCR (SQM 1 & 2 deferred by ICAI)"},{"num":34,"paper":"P3-Audit","mod":"M1","ch":2,"name":"General Auditing Principles and Auditors Responsibilities","topics":"SA 200, 210, 240 Fraud, 250 Laws & Regs, 260, 299 Joint audit"},{"num":35,"paper":"P3-Audit","mod":"M1","ch":3,"name":"Audit Planning, Strategy and Execution","topics":"SA 300 Planning, SA 402, SA 610 Internal auditors, SA 620 Experts"},{"num":36,"paper":"P3-Audit","mod":"M1","ch":4,"name":"Materiality, Risk Assessment and Internal Control","topics":"SA 315, SA 320, SA 330, SA 450, SA 265, IFC"},{"num":37,"paper":"P3-Audit","mod":"M1","ch":5,"name":"Audit Evidence","topics":"SA 500, 501, 505, 510, 520, 530, 540, 550"},{"num":38,"paper":"P3-Audit","mod":"M1","ch":6,"name":"Completion and Review","topics":"SA 560 Subsequent events, SA 570 Going concern, SA 580 Written reps"},{"num":39,"paper":"P3-Audit","mod":"M1","ch":7,"name":"Reporting","topics":"SA 700, 701 KAM, 705, 706, 710, 720, CARO 2020, Sec 143"},{"num":40,"paper":"P3-Audit","mod":"M2","ch":8,"name":"Specialised Areas","topics":"SA 800, SA 805, SA 810 Special purpose & summary FS"},{"num":41,"paper":"P3-Audit","mod":"M2","ch":9,"name":"Related Services","topics":"SRS 4400 Agreed-upon procedures, SRS 4410 Compilation"},{"num":42,"paper":"P3-Audit","mod":"M2","ch":10,"name":"Review of Financial Information","topics":"SRE 2400, SRE 2410 Interim review"},{"num":43,"paper":"P3-Audit","mod":"M2","ch":11,"name":"Prospective Financial Information and Other Assurance Services","topics":"SAE 3400 PFI, SAE 3402, SAE 3420"},{"num":44,"paper":"P3-Audit","mod":"M2","ch":12,"name":"Digital Auditing & Assurance","topics":"Data analytics, CAATs, AI/RPA, Cloud & cyber risk"},{"num":45,"paper":"P3-Audit","mod":"M2","ch":13,"name":"Group Audits","topics":"SA 600, Component auditors, Consolidated FS audit"},{"num":46,"paper":"P3-Audit","mod":"M2","ch":14,"name":"Special Features of Audit of Banks & NBFCs","topics":"Bank audit (IRAC, NPA, LFAR), NBFC audit & RBI directions"},{"num":47,"paper":"P3-Audit","mod":"M3","ch":15,"name":"Overview of Audit of Public Sector Undertakings","topics":"C&AG, Sec 139/143 directions, Propriety & performance audit"},{"num":48,"paper":"P3-Audit","mod":"M3","ch":16,"name":"Internal Audit","topics":"Standards on Internal Audit, Sec 138, Internal audit reporting"},{"num":49,"paper":"P3-Audit","mod":"M3","ch":17,"name":"Due Diligence, Investigation & Forensic Accounting","topics":"Due diligence, Investigation, Forensic accounting & FAIS"},{"num":50,"paper":"P3-Audit","mod":"M3","ch":18,"name":"Emerging Areas","topics":"SDG & ESG assurance, BRSR Core, SSAE 3000"},{"num":51,"paper":"P3-Audit","mod":"M3","ch":19,"name":"Professional Ethics & Liabilities of Auditors","topics":"Code of Ethics, CA Act 1949 Schedules, NOCLAR, Auditor liabilities"},{"num":52,"paper":"P4-DT","mod":"M1","ch":1,"name":"Basic Concepts","topics":"Tax year (s.3), Charge (s.4), Residence (s.6), Rates & surcharge, New regime (s.202)"},{"num":53,"paper":"P4-DT","mod":"M1","ch":2,"name":"Incomes which do not form part of Total Income","topics":"s.11 with Schedules II–VII, Disallowance s.14, Political parties s.12"},{"num":54,"paper":"P4-DT","mod":"M1","ch":3,"name":"Profits and Gains of Business or Profession","topics":"s.26–66, Depreciation, Disallowances s.35–37, Presumptive s.58"},{"num":55,"paper":"P4-DT","mod":"M1","ch":4,"name":"Capital Gains","topics":"s.67–91, Exemptions s.82–89, Special rates s.196–198"},{"num":56,"paper":"P4-DT","mod":"M1","ch":5,"name":"Income from Other Sources","topics":"s.92–95, Gifts & deemed income, Dividends"},{"num":57,"paper":"P4-DT","mod":"M1","ch":6,"name":"Income of Other Persons included in Assessee's Total Income","topics":"Clubbing s.96–100"},{"num":58,"paper":"P4-DT","mod":"M1","ch":7,"name":"Set-off and Carry Forward of Losses","topics":"s.108–121"},{"num":59,"paper":"P4-DT","mod":"M1","ch":8,"name":"Deductions from Gross Total Income","topics":"s.122–154 (e.g. s.123, 140, 146, 147)"},{"num":60,"paper":"P4-DT","mod":"M2","ch":9,"name":"Assessment of Various Entities","topics":"Firms/LLP, AOP/BOI, Companies s.199–201, MAT s.206"},{"num":61,"paper":"P4-DT","mod":"M2","ch":10,"name":"Assessment of Trusts and Institutions, Political Parties and Other Special Entities","topics":"NPOs s.332–355, Political parties s.12, Business trusts, IFs"},{"num":62,"paper":"P4-DT","mod":"M2","ch":11,"name":"Tax Planning, Tax Avoidance and Tax Evasion","topics":"GAAR s.178–184, Planning vs avoidance vs evasion"},{"num":63,"paper":"P4-DT","mod":"M2","ch":12,"name":"Taxation of Digital Transactions","topics":"VDA (s.194), Equalisation levy, SEP"},{"num":64,"paper":"P4-DT","mod":"M3","ch":13,"name":"Deduction, Collection and Recovery of Tax","topics":"TDS s.392 (salary) & s.393 table, TCS s.394, Advance tax, Interest s.423–425, Recovery s.411–421"},{"num":65,"paper":"P4-DT","mod":"M3","ch":14,"name":"Income-tax Authorities","topics":"Authorities (s.236 onwards), Jurisdiction, Powers, Faceless procedures"},{"num":66,"paper":"P4-DT","mod":"M3","ch":15,"name":"Assessment Procedure","topics":"Return s.263, Assessment s.270–273, Reassessment s.279–282, Search s.247, Survey s.253"},{"num":67,"paper":"P4-DT","mod":"M3","ch":16,"name":"Appeals and Revision","topics":"Appeals s.356–365 (JCIT(A)/CIT(A), ITAT s.362, HC s.365), Revision s.377–378"},{"num":68,"paper":"P4-DT","mod":"M3","ch":17,"name":"Dispute Resolution","topics":"DRP s.275, Dispute Resolution Committee s.379"},{"num":69,"paper":"P4-DT","mod":"M3","ch":18,"name":"Miscellaneous Provisions","topics":"Interest & fees, Notices, Time limits, Other procedures"},{"num":70,"paper":"P4-DT","mod":"M3","ch":19,"name":"Provisions to Counteract Unethical Tax Practices","topics":"Penalties s.439 onwards, Prosecution s.478 onwards"},{"num":71,"paper":"P4-DT","mod":"M3","ch":20,"name":"Tax Audit and Ethical Compliances","topics":"Tax audit s.63, Audit report, Ethics in tax practice"},{"num":72,"paper":"P4-DT","mod":"M4","ch":21,"name":"Non-Resident Taxation","topics":"Deemed accrual s.9, Special provisions s.212–218, NR presumptive s.59–61"},{"num":73,"paper":"P4-DT","mod":"M4","ch":22,"name":"Double Taxation Relief","topics":"DTAA s.159, Unilateral relief s.160"},{"num":74,"paper":"P4-DT","mod":"M4","ch":23,"name":"Advance Rulings","topics":"Board for Advance Rulings s.381, Application s.383"},{"num":75,"paper":"P4-DT","mod":"M4","ch":24,"name":"Transfer Pricing","topics":"s.161–173: AE, International & SDT, ALP methods, APA, Safe harbour, CbCR"},{"num":76,"paper":"P4-DT","mod":"M4","ch":25,"name":"Fundamentals of BEPS","topics":"15 BEPS Action Plans, Pillar One & Pillar Two"},{"num":77,"paper":"P4-DT","mod":"M4","ch":26,"name":"Application and Interpretation of Tax Treaties","topics":"PE, Treaty interpretation, LOB, Beneficial ownership, MLI"},{"num":78,"paper":"P4-DT","mod":"M4","ch":27,"name":"Overview of Model Tax Conventions","topics":"OECD Model, UN Model, US Model"},{"num":79,"paper":"P4-DT","mod":"M4","ch":28,"name":"Latest Developments in International Taxation","topics":"GloBE / global minimum tax, Digital economy, Recent developments"},{"num":80,"paper":"P5-IDT","mod":"M1","ch":1,"name":"Supply under GST","topics":"Sec 7/8 CGST, Schedules I–III, Composite & mixed supply"},{"num":81,"paper":"P5-IDT","mod":"M1","ch":2,"name":"Charge of GST","topics":"Sec 9 CGST / 5 IGST, RCM, Composition s.10"},{"num":82,"paper":"P5-IDT","mod":"M1","ch":3,"name":"Place of Supply","topics":"Sec 10–13 IGST"},{"num":83,"paper":"P5-IDT","mod":"M1","ch":4,"name":"Exemptions from GST","topics":"Sec 11, Exemption notifications"},{"num":84,"paper":"P5-IDT","mod":"M1","ch":5,"name":"Time of Supply","topics":"Sec 12–14 CGST"},{"num":85,"paper":"P5-IDT","mod":"M1","ch":6,"name":"Value of Supply","topics":"Sec 15, Valuation Rules"},{"num":86,"paper":"P5-IDT","mod":"M2","ch":7,"name":"Input Tax Credit","topics":"Sec 16–21, Blocked credits s.17(5), ISD"},{"num":87,"paper":"P5-IDT","mod":"M2","ch":8,"name":"Registration","topics":"Sec 22–30"},{"num":88,"paper":"P5-IDT","mod":"M2","ch":9,"name":"Tax Invoice, Credit and Debit Notes","topics":"Sec 31–34, E-invoicing"},{"num":89,"paper":"P5-IDT","mod":"M2","ch":10,"name":"Accounts and Records; E-way Bill","topics":"Sec 35–36, E-way Bill Rules"},{"num":90,"paper":"P5-IDT","mod":"M2","ch":11,"name":"Payment of Tax","topics":"Sec 49–50, ITC utilisation, TDS s.51, TCS s.52"},{"num":91,"paper":"P5-IDT","mod":"M2","ch":12,"name":"Electronic Commerce Transactions","topics":"Sec 9(5), ECO TCS s.52"},{"num":92,"paper":"P5-IDT","mod":"M2","ch":13,"name":"Returns","topics":"GSTR-1, GSTR-3B, GSTR-9/9C, Sec 37–48"},{"num":93,"paper":"P5-IDT","mod":"M3","ch":14,"name":"Import and Export under GST","topics":"Imports, Zero-rated supply s.16 IGST, LUT"},{"num":94,"paper":"P5-IDT","mod":"M3","ch":15,"name":"Refunds","topics":"Sec 54–56"},{"num":95,"paper":"P5-IDT","mod":"M3","ch":16,"name":"Job Work","topics":"Sec 143"},{"num":96,"paper":"P5-IDT","mod":"M3","ch":17,"name":"Assessment and Audit","topics":"Sec 59–66"},{"num":97,"paper":"P5-IDT","mod":"M3","ch":18,"name":"Inspection, Search, Seizure and Arrest","topics":"Sec 67–72"},{"num":98,"paper":"P5-IDT","mod":"M3","ch":19,"name":"Demands and Recovery","topics":"Sec 73–74A, 75–84"},{"num":99,"paper":"P5-IDT","mod":"M3","ch":20,"name":"Liability to Pay in Certain Cases","topics":"Sec 85–94"},{"num":100,"paper":"P5-IDT","mod":"M3","ch":21,"name":"Offences and Penalties and Ethical Aspects under GST","topics":"Sec 122–138"},{"num":101,"paper":"P5-IDT","mod":"M3","ch":22,"name":"Appeals and Revision","topics":"Sec 107–121, GSTAT"},{"num":102,"paper":"P5-IDT","mod":"M3","ch":23,"name":"Advance Ruling","topics":"Sec 95–106"},{"num":103,"paper":"P5-IDT","mod":"M3","ch":24,"name":"Miscellaneous Provisions","topics":"Sec 171 Anti-profiteering, Other provisions"},{"num":104,"paper":"P5-IDT","mod":"M4","ch":1,"name":"Levy of and Exemptions from Customs Duty","topics":"Sec 12–28 Customs Act, Remission, Exemptions s.25"},{"num":105,"paper":"P5-IDT","mod":"M4","ch":2,"name":"Types of Duty","topics":"BCD, IGST & cess on imports, Safeguard, Anti-dumping, CVD"},{"num":106,"paper":"P5-IDT","mod":"M4","ch":3,"name":"Classification of Imported and Export Goods","topics":"Customs Tariff Act 1975, HSN, Rules of interpretation"},{"num":107,"paper":"P5-IDT","mod":"M4","ch":4,"name":"Valuation under the Customs Act, 1962","topics":"Sec 14, Import & Export Valuation Rules"},{"num":108,"paper":"P5-IDT","mod":"M4","ch":5,"name":"Importation, Exportation and Transportation of Goods","topics":"Bill of entry, Shipping bill, Transit & transhipment, Baggage"},{"num":109,"paper":"P5-IDT","mod":"M4","ch":6,"name":"Warehousing","topics":"Sec 57–73A, Manufacture in bond (MOOWR)"},{"num":110,"paper":"P5-IDT","mod":"M4","ch":7,"name":"Refund","topics":"Sec 26–27, Unjust enrichment, Interest s.27A"},{"num":111,"paper":"P5-IDT","mod":"M4","ch":8,"name":"Foreign Trade Policy","topics":"FTP 2023, Advance authorisation, EPCG, EOU/SEZ, RoDTEP"}];
 const PAPERS=[{id:'P1-FR',name:'Financial Reporting',short:'FR',color:'#0071E3',total:22},{id:'P2-AFM',name:'Adv. Financial Mgmt',short:'AFM',color:'#5856D6',total:15},{id:'P3-Audit',name:'Advanced Auditing',short:'Audit',color:'#FF9F0A',total:19},{id:'P4-DT',name:'Direct Tax Laws',short:'DT',color:'#34C759',total:28},{id:'P5-IDT',name:'Indirect Tax Laws',short:'IDT',color:'#FF6B35',total:32},{id:'P6-IBS',name:'Integrated Business Solutions',short:'IBS',color:'#AF52DE',total:0}];
+PAPERS.forEach(p=>{p.total=CHAPTERS.filter(c=>c.paper===p.id).length;});
 const COLS=['Lec','R1','R2','R3','M1','M2'];
 const CKEYS=['lec','r1','r2','r3','m1','m2'];
-const MOCK_SECTIONS=[{id:'rev1',title:'Revision 1',dates:'May 1 – May 31',color:'#0071E3',items:['P1 – Financial Reporting','P2 – Adv Financial Mgmt','P3 – Advanced Auditing','P4 – Direct Tax','P5 – Indirect Tax Laws','P6 – IBS']},{id:'rev2',title:'Revision 2',dates:'Jun 1 – Jun 25',color:'#5856D6',items:['P1 – Financial Reporting','P2 – Adv Financial Mgmt','P3 – Advanced Auditing','P4 – Direct Tax','P5 – Indirect Tax Laws','P6 – IBS']},{id:'mock1',title:'Mock Exam 1',dates:'Jun 26 – Jul 10',color:'#FF3B30',items:['P1 – FR (3 hrs)','P2 – AFM (3 hrs)','P3 – Audit (3 hrs)','P4 – DT (3 hrs)','P5 – IDT (3 hrs)','P6 – IBS (3 hrs)']},{id:'rev3',title:'Revision 3',dates:'Jul 11 – Aug 10',color:'#34C759',items:['P1 – Financial Reporting','P2 – Adv Financial Mgmt','P3 – Advanced Auditing','P4 – Direct Tax','P5 – Indirect Tax Laws','P6 – IBS']},{id:'mock2',title:'Mock Exam 2',dates:'Aug 11 – Aug 20',color:'#FF6B35',items:['P1 – FR (3 hrs)','P2 – AFM (3 hrs)','P3 – Audit (3 hrs)','P4 – DT (3 hrs)','P5 – IDT (3 hrs)','P6 – IBS (3 hrs)']},{id:'sprint',title:'Final Sprint',dates:'Aug 21 – Nov 1',color:'#AF52DE',items:['Short notes – P1','Short notes – P2','Short notes – P3','Short notes – P4','Short notes – P5','Short notes – P6']}];
+const MOCK_SECTIONS=[{id:'lectures',title:'Lectures',color:'#AF52DE',items:['P1 – Financial Reporting','P2 – Adv Financial Mgmt','P3 – Advanced Auditing','P4 – Direct Tax','P5 – Indirect Tax Laws','P6 – IBS']},{id:'rev1',title:'Revision 1',color:'#0071E3',items:['P1 – Financial Reporting','P2 – Adv Financial Mgmt','P3 – Advanced Auditing','P4 – Direct Tax','P5 – Indirect Tax Laws','P6 – IBS']},{id:'rev2',title:'Revision 2',color:'#5856D6',items:['P1 – Financial Reporting','P2 – Adv Financial Mgmt','P3 – Advanced Auditing','P4 – Direct Tax','P5 – Indirect Tax Laws','P6 – IBS']},{id:'rev3',title:'Revision 3',color:'#34C759',items:['P1 – Financial Reporting','P2 – Adv Financial Mgmt','P3 – Advanced Auditing','P4 – Direct Tax','P5 – Indirect Tax Laws','P6 – IBS']},{id:'mock1',title:'Mock Exam 1',color:'#FF3B30',items:['P1 – FR (3 hrs)','P2 – AFM (3 hrs)','P3 – Audit (3 hrs)','P4 – DT (3 hrs)','P5 – IDT (3 hrs)','P6 – IBS (3 hrs)']},{id:'mock2',title:'Mock Exam 2',color:'#FF6B35',items:['P1 – FR (3 hrs)','P2 – AFM (3 hrs)','P3 – Audit (3 hrs)','P4 – DT (3 hrs)','P5 – IDT (3 hrs)','P6 – IBS (3 hrs)']}];
 
 // Default anchors: wake 6am, sleep 11pm — no default breaks
 const DEFAULT_WAKE = '06:00';
@@ -342,23 +425,42 @@ const FIREBASE_CONFIG={
 };
 
 const NOTES_BACKUP_KEY='caf_notes_backup';
+let serverLoaded=false, connTimer=null;
 
-function backupNotesLocally(notes){
-  try{ localStorage.setItem(NOTES_BACKUP_KEY, JSON.stringify(notes)); }catch(e){}
+// Notes are stored one-per-id in `notesMap` so that saving on one device can
+// never overwrite notes created on another. Deleted notes keep a small
+// "deleted" marker so the deletion also syncs everywhere.
+function noteNewer(a,b){ return !b || (a&&(a.updated||0)>(b.updated||0)); }
+function mergeNoteMaps(...maps){
+  const out={};
+  maps.forEach(m=>{ Object.values(m||{}).forEach(n=>{ if(n&&n.id&&noteNewer(n,out[n.id])) out[n.id]=n; }); });
+  return out;
 }
-
+function legacyToMap(arr){
+  const m={}; (Array.isArray(arr)?arr:Object.values(arr||{})).forEach(n=>{ if(n&&n.id) m[n.id]=n; }); return m;
+}
+function backupNotesLocally(){
+  try{ localStorage.setItem(NOTES_BACKUP_KEY, JSON.stringify(localCache.notesMap||{})); }catch(e){}
+}
+function readLocalNotes(){
+  let m={};
+  try{ const b=JSON.parse(localStorage.getItem(NOTES_BACKUP_KEY)||'{}'); m=Array.isArray(b)?legacyToMap(b):b; }catch(e){}
+  return mergeNoteMaps(m, legacyToMap(localCache.notes), localCache.notesMap);
+}
 function getNotes(){
-  if(localCache.notes && localCache.notes.length>0) return localCache.notes;
-  try{
-    const backup=JSON.parse(localStorage.getItem(NOTES_BACKUP_KEY)||'[]');
-    if(backup.length>0){ localCache.notes=backup; pushToFirebase(); return backup; }
-  }catch(e){}
-  return [];
+  return Object.values(localCache.notesMap||{}).filter(n=>!n.deleted);
 }
-
-function saveNotes(notes){
-  backupNotesLocally(notes);
-  patchState({notes:notes});
+function saveNote(note){
+  localCache.notesMap=localCache.notesMap||{};
+  localCache.notesMap[note.id]=note;
+  backupNotesLocally();
+  localStorage.setItem('caf_local_cache',JSON.stringify(localCache));
+  if(isFirebaseReady&&dbRef){
+    setSyncStatus('syncing','Saving…');
+    dbRef.child('notesMap/'+note.id).set(note)
+      .then(()=>setSyncStatus('connected','Synced'))
+      .catch(()=>setSyncStatus('offline','Offline – saved on this device'));
+  }
 }
 
 function initFirebase(config){
@@ -369,20 +471,34 @@ function initFirebase(config){
     dbRef=db.ref('caf_data');
     isFirebaseReady=true;
     setSyncStatus('syncing','Connecting…');
+    clearTimeout(connTimer);
+    connTimer=setTimeout(()=>{ if(!serverLoaded) setSyncStatus('offline','Not syncing – check connection'); },15000);
+    db.ref('.info/connected').on('value',s=>{
+      if(s.val()===true){ if(serverLoaded) setSyncStatus('connected','Synced'); }
+      else if(serverLoaded) setSyncStatus('offline','Offline – saved on this device');
+    });
     dbRef.on('value', snap=>{
       const data=snap.val()||{};
-      // Only use localStorage backup if Firebase has NEVER had notes (truly new device/db)
-      // Once Firebase is connected, it is always the source of truth — never restore over it
-      if(!isFirebaseReady && (!data.notes || data.notes.length===0)){
-        try{ const backup=JSON.parse(localStorage.getItem(NOTES_BACKUP_KEY)||'[]'); if(backup.length>0) data.notes=backup; }catch(e){}
+      const serverMap=mergeNoteMaps(legacyToMap(data.notes), data.notesMap);
+      let notesMap=serverMap;
+      if(!serverLoaded){
+        // First load on this device: upload any notes that only exist here,
+        // or that were edited here more recently than the copy in Firebase.
+        const localMap=readLocalNotes();
+        notesMap=mergeNoteMaps(serverMap, localMap);
+        const ups={};
+        Object.values(notesMap).forEach(n=>{ if(noteNewer(n,(data.notesMap||{})[n.id])) ups['notesMap/'+n.id]=n; });
+        if(Object.keys(ups).length) dbRef.update(ups).catch(()=>{});
+        serverLoaded=true; clearTimeout(connTimer);
       }
+      delete data.notes;
+      data.notesMap=notesMap;
       localCache=data;
       localStorage.setItem('caf_local_cache', JSON.stringify(localCache));
-      // Sync backup to match Firebase (including deletions)
-      backupNotesLocally(localCache.notes||[]);
+      backupNotesLocally();
       setSyncStatus('connected','Synced');
       refreshAllUI();
-    }, ()=>setSyncStatus('offline','Offline'));
+    }, ()=>setSyncStatus('offline','Not syncing – check connection'));
     return true;
   }catch(e){ setSyncStatus('unconfigured','Error'); return false; }
 }
@@ -392,9 +508,13 @@ function pushToFirebase(){
   clearTimeout(syncDebounceTimer);
   setSyncStatus('syncing','Saving…');
   syncDebounceTimer=setTimeout(()=>{
-    dbRef.set(localCache)
-      .then(()=>setSyncStatus('connected','Synced'))
-      .catch(()=>setSyncStatus('offline','Offline – saved locally'));
+    // Update only non-note keys; notes are saved individually by saveNote().
+    const upd={};
+    Object.keys(localCache).forEach(k=>{ if(k!=='notes'&&k!=='notesMap') upd[k]=localCache[k]; });
+    let p;
+    try{ p=dbRef.update(upd); }catch(e){ setSyncStatus('offline','Sync error'); return; }
+    p.then(()=>setSyncStatus('connected','Synced'))
+     .catch(()=>setSyncStatus('offline','Offline – saved on this device'));
   },800);
 }
 
@@ -434,8 +554,8 @@ function closeSyncModal(){ document.getElementById('sync-modal').classList.remov
 // ═══════════════════════════════════════════════════════
 //  COUNTDOWN + TABS
 // ═══════════════════════════════════════════════════════
-// Exam date: 1 November 2026
-const EXAM_DATE = new Date('2026-11-01');
+// Exam date: 1 May 2027 (first paper)
+const EXAM_DATE = new Date(2027, 4, 1);
 function countdown(){ document.getElementById('cd-num').textContent=Math.max(0,Math.ceil((EXAM_DATE-new Date())/(864e5))); }
 
 function showTab(id,btn){
@@ -453,11 +573,11 @@ function updateDashboard(){
   const mocks=localCache.mocks||{};
   const allDone=CHAPTERS.filter(c=>getChStatus(c.num,'lec')===2).length;
   const allIP=CHAPTERS.filter(c=>CKEYS.some(k=>getChStatus(c.num,k)===1)).length;
-  const mockDone=Object.values(mocks).filter(Boolean).length;
+  const mockDone=MOCK_SECTIONS.reduce((a,m)=>a+m.items.filter((_,i)=>mocks[m.id+'_'+i]).length,0);
   const totalMock=MOCK_SECTIONS.reduce((a,m)=>a+m.items.length,0);
   document.getElementById('dash-stats').innerHTML=`
     <div class="stat-card"><div class="stat-val">${Math.max(0,Math.ceil((EXAM_DATE-new Date())/(864e5)))}</div><div class="stat-lbl">Days Remaining</div></div>
-    <div class="stat-card"><div class="stat-val" style="color:var(--green)">${allDone}<span style="font-size:16px;color:var(--text2)"> /116</span></div><div class="stat-lbl">Chapters Done (Lec)</div></div>
+    <div class="stat-card"><div class="stat-val" style="color:var(--green)">${allDone}<span style="font-size:16px;color:var(--text2)"> /${CHAPTERS.length}</span></div><div class="stat-lbl">Chapters Done (Lec)</div></div>
     <div class="stat-card"><div class="stat-val" style="color:var(--amber)">${allIP}</div><div class="stat-lbl">In Progress</div></div>
     <div class="stat-card"><div class="stat-val" style="color:var(--accent)">${mockDone}<span style="font-size:16px;color:var(--text2)"> /${totalMock}</span></div><div class="stat-lbl">Mocks & Rev Done</div></div>`;
   const pl=document.getElementById('subj-progress-list'); pl.innerHTML='';
@@ -552,7 +672,7 @@ function buildChapters(){
     const initPct=Math.round(totalTicks/maxTicks*100);
     const block=document.createElement('div');
     block.className='ch-paper-block';block.id='cpb_'+p.id;
-    block.innerHTML=`<div class="ch-paper-hdr" onclick="togglePaperBlock('${p.id}')"><div class="ch-paper-left"><div class="ch-paper-dot" style="background:${p.color}"></div><div><div class="ch-paper-name">${p.short} — ${p.name}</div><div class="ch-paper-info">${p.total} chapters</div></div></div><div class="ch-paper-right"><div class="pbar-wrap" style="width:80px"><div class="pbar" id="chbar_${p.id}" style="background:${p.color};width:${initPct}%"></div></div><div class="ch-pct" id="chpct_${p.id}" style="color:${p.color}">${initPct}%</div><div class="chevron">▼</div></div></div><div class="ch-table" id="cht_${p.id}"><div class="ch-hdr-row"><div>#</div><div>Chapter</div><div>Key Topics</div>${COLS.map(c=>`<div style="text-align:center">${c}</div>`).join('')}</div>${chs.map(ch=>`<div class="ch-data-row"><div class="ch-num">${ch.ch}</div><div class="ch-name-cell">${ch.name}</div><div class="ch-topic">${ch.topics}</div>${CKEYS.map(k=>{const v=getChStatus(ch.num,k);return`<div style="display:flex;justify-content:center"><button class="status-btn${v===2?' done':v===1?' ip':''}" id="sb_${ch.num}_${k}" onclick="cycleChStatus(${ch.num},'${k}')">${v===2?'✓':v===1?'↻':''}</button></div>`;}).join('')}</div>`).join('')}</div>`;
+    block.innerHTML=`<div class="ch-paper-hdr" onclick="togglePaperBlock('${p.id}')"><div class="ch-paper-left"><div class="ch-paper-dot" style="background:${p.color}"></div><div><div class="ch-paper-name">${p.short} — ${p.name}</div><div class="ch-paper-info">${p.total} chapters</div></div></div><div class="ch-paper-right"><div class="pbar-wrap" style="width:80px"><div class="pbar" id="chbar_${p.id}" style="background:${p.color};width:${initPct}%"></div></div><div class="ch-pct" id="chpct_${p.id}" style="color:${p.color}">${initPct}%</div><div class="chevron">▼</div></div></div><div class="ch-table" id="cht_${p.id}"><div class="ch-hdr-row"><div>#</div><div>Chapter</div><div>Key Topics</div>${COLS.map(c=>`<div style="text-align:center">${c}</div>`).join('')}</div>${chs.map(ch=>`<div class="ch-data-row"><div class="ch-num">${ch.ch}</div><div class="ch-name-cell">${ch.name}</div><div class="ch-topic">${ch.topics}</div><div class="ch-cells">${CKEYS.map((k,i)=>{const v=getChStatus(ch.num,k);return`<div class="ch-cell" data-col="${COLS[i]}"><button class="status-btn${v===2?' done':v===1?' ip':''}" id="sb_${ch.num}_${k}" onclick="cycleChStatus(${ch.num},'${k}')">${v===2?'✓':v===1?'↻':''}</button></div>`;}).join('')}</div></div>`).join('')}</div>`;
     c.appendChild(block);
   });
 }
@@ -586,7 +706,7 @@ function buildMocks(){
   MOCK_SECTIONS.forEach(m=>{
     const done=m.items.filter((_,i)=>ms[m.id+'_'+i]).length;
     const d=document.createElement('div');d.className='mock-card';d.id='mcard_'+m.id;
-    d.innerHTML=`<div class="mock-title" style="color:${m.color}">${m.title}</div><div class="mock-date">${m.dates}</div><div class="mock-papers">${m.items.map((item,i)=>{const key=m.id+'_'+i;const isDone=ms[key]||false;return`<div class="mock-paper-row"><span class="mock-paper-name">${item}</span><div class="check-box${isDone?' done':''}" id="cb_${key}" onclick="toggleMock('${key}')">${isDone?'✓':''}</div></div>`;}).join('')}</div><div><div class="mock-prog-label"><span>${done}/${m.items.length} done</span><span>${Math.round(done/m.items.length*100)}%</span></div><div class="pbar-wrap"><div class="pbar" id="mpbar_${m.id}" style="background:${m.color};width:${Math.round(done/m.items.length*100)}%"></div></div></div>`;
+    d.innerHTML=`<div class="mock-title" style="color:${m.color}">${m.title}</div><div class="mock-papers">${m.items.map((item,i)=>{const key=m.id+'_'+i;const isDone=ms[key]||false;return`<div class="mock-paper-row"><span class="mock-paper-name">${item}</span><div class="check-box${isDone?' done':''}" id="cb_${key}" onclick="toggleMock('${key}')">${isDone?'✓':''}</div></div>`;}).join('')}</div><div><div class="mock-prog-label"><span>${done}/${m.items.length} done</span><span>${Math.round(done/m.items.length*100)}%</span></div><div class="pbar-wrap"><div class="pbar" id="mpbar_${m.id}" style="background:${m.color};width:${Math.round(done/m.items.length*100)}%"></div></div></div>`;
     c.appendChild(d);
   });
 }
@@ -632,7 +752,7 @@ function openNote(id){
 
 function newNote(){
   const note={id:'n'+Date.now(),title:'',body:'',updated:Date.now()};
-  saveNotes([...getNotes(),note]);
+  saveNote(note);
   buildNotesList();openNote(note.id);
 }
 
@@ -641,11 +761,12 @@ function autoSaveNote(){
   clearTimeout(saveTimer);
   saveTimer=setTimeout(()=>{
     if(!activeNoteId)return;
-    const notes=getNotes(), note=notes.find(n=>n.id===activeNoteId);if(!note)return;
-    note.title=document.getElementById('note-title')?.value||'';
-    note.body=document.getElementById('note-body')?.value||'';
-    note.updated=Date.now();
-    saveNotes(notes);
+    const cur=getNotes().find(n=>n.id===activeNoteId);if(!cur)return;
+    const note={...cur,
+      title:document.getElementById('note-title')?.value||'',
+      body:document.getElementById('note-body')?.value||'',
+      updated:Date.now()};
+    saveNote(note);
     buildNotesList();
     const ind=document.getElementById('save-indicator');
     if(ind){ind.classList.add('show');setTimeout(()=>ind.classList.remove('show'),2000);}
@@ -654,7 +775,7 @@ function autoSaveNote(){
 
 function deleteNote(id){
   if(!confirm('Delete this note?'))return;
-  saveNotes(getNotes().filter(n=>n.id!==id));
+  saveNote({id,deleted:true,updated:Date.now()});
   activeNoteId=null;
   document.getElementById('notes-main').innerHTML=`<div class="notes-empty"><div class="notes-empty-icon">📄</div><div style="font-size:13px">Select a note or create a new one</div></div>`;
   buildNotesList();
@@ -679,8 +800,21 @@ function refreshAllUI(){
 // ═══════════════════════════════════════════════════════
 //  INIT
 // ═══════════════════════════════════════════════════════
+function setThemeIcon(){
+  const b=document.getElementById('theme-btn'); if(!b) return;
+  const dark=document.documentElement.dataset.theme==='dark';
+  b.textContent=dark?'☀':'☾'; b.title=dark?'Switch to light theme':'Switch to dark theme';
+}
+function toggleTheme(){
+  const t=document.documentElement.dataset.theme==='dark'?'light':'dark';
+  document.documentElement.dataset.theme=t;
+  try{localStorage.setItem('caf_theme',t);}catch(e){}
+  setThemeIcon();
+}
 (function init(){
+  setThemeIcon();
   try{localCache=JSON.parse(localStorage.getItem('caf_local_cache')||'{}');}catch(e){localCache={};}
+  localCache.notesMap=readLocalNotes(); delete localCache.notes;
   countdown();buildScheduleUI();buildChapters();buildMocks();buildNotesList();updateDashboard();
   const ls=document.getElementById('loading-screen');
   ls.classList.add('hidden');setTimeout(()=>{ls.style.display='none';},400);
